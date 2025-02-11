@@ -1,0 +1,150 @@
+import pandas as pd
+import os  # Import os to handle directory operations
+import numpy as np
+
+# Step 1: Define paths for files and output directories
+#Commented out Paul's file paths for testing
+#timesheet_file = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data\cleaned_combined_timesheet_data.parquet'
+#hr_summary_file = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data\summary_hr_data.parquet'
+#ea_base_rates_path = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\UniSC Data Transfer 2 Sept\EA Base rates.xlsx'
+#output_cleaned_data = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data\\'
+#output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
+
+
+timesheet_file = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\cleaned_combined_timesheet_data.parquet'
+hr_summary_file = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\summary_hr_data.parquet'
+ea_base_rates_path = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\UniSC Data Transfer 2 Sept\EA Base rates.xlsx'
+
+output_cleaned_data = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\\'
+output_tests = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Tests\\'
+
+# Ensure the output directories exist
+if not os.path.exists(output_cleaned_data):
+    os.makedirs(output_cleaned_data)
+
+if not os.path.exists(output_tests):
+    os.makedirs(output_tests)
+
+# Step 2: Load the cleaned timesheet and HR summary data from Parquet
+timesheet_df = pd.read_parquet(timesheet_file)
+hr_summary_df = pd.read_parquet(hr_summary_file)
+base_rates_df = pd.read_excel(ea_base_rates_path)
+
+
+
+# Step 3: Add an index column to timesheet data before the join
+timesheet_df['index'] = timesheet_df.index  # Add an index column
+
+# Step 4: Create a new column EMPID_EMPL_RCD in timesheet data by concatenating EMPLID and EMPL_RCD as text
+timesheet_df['EMPID_EMPL_RCD'] = timesheet_df['EMPLID'].astype(str) + timesheet_df['EMPL_RCD'].astype(str)
+
+# Print the number of rows before the join
+print(f"Number of rows in timesheet before the join: {len(timesheet_df)}")
+
+# Step 5: Left join on EMPID_EMPL_RCD and include SAL_ADMIN_PLAN, earliest_date, and latest_date
+merged_df = pd.merge(
+    timesheet_df,
+    hr_summary_df[['EMPID_EMPL_RCD', 'job_code', 'pay_group', 'merged_plan', 'earliest_date', 'latest_date']],  # Columns to keep
+    how='left',  # Left join
+    on='EMPID_EMPL_RCD'
+)
+
+# Print the number of rows after the join
+print(f"Number of rows after the join: {len(merged_df)}")
+
+# Rename 'merged_plan' to 'SAL_ADMIN_PLAN'
+merged_df.rename(columns={'merged_plan': 'SAL_ADMIN_PLAN'}, inplace=True)
+
+# Step 6: Identify transactions where DATE WORKED is outside the employment period (not between earliest and latest date)
+outside_employment_period = merged_df[
+    (merged_df['DATE WORKED'] < merged_df['earliest_date']) |
+    (merged_df['DATE WORKED'] > merged_df['latest_date']) |
+    merged_df['earliest_date'].isnull() | merged_df['latest_date'].isnull()  # Include rows where earliest/latest are null
+]
+
+# Step 7: Output transactions "working outside employment period" to an Excel file in the Test folder
+if not outside_employment_period.empty:
+    test_file = output_tests + 'working_outside_employment_period.xlsx'
+    outside_employment_period.to_excel(test_file, index=False)
+    print(f"Transactions working outside employment period saved to {test_file}")
+else:
+    print("No transactions found where DATE WORKED is outside the employment period.")
+
+# Step 9: Check for null values in SAL_ADMIN_PLAN and output to exceptions file if necessary
+null_sal_admin_plan = merged_df[merged_df['SAL_ADMIN_PLAN'].isnull()]
+
+if not null_sal_admin_plan.empty:
+    # Save null SAL_ADMIN_PLAN records to an exceptions file in the output folder
+    exceptions_file = output_tests + 'exceptions_null_SAL_ADMIN_PLAN.xlsx'
+    null_sal_admin_plan.to_excel(exceptions_file, index=False)
+    print(f"Warning: {len(null_sal_admin_plan)} transactions have SAL_ADMIN_PLAN as null.")
+    print(f"Transactions with null SAL_ADMIN_PLAN saved to {exceptions_file}")
+else:
+    print("No transactions with SAL_ADMIN_PLAN as null.")
+
+# Step 10: Check for duplicate index numbers after the join and output to the Test folder if necessary
+duplicate_index = merged_df[merged_df.duplicated(subset=['index'], keep=False)]
+
+if not duplicate_index.empty:
+    # Output duplicated index transactions to the Test folder
+    duplicate_index_file = output_tests + 'duplicate_index_transactions.xlsx'
+    duplicate_index.to_excel(duplicate_index_file, index=False)
+    print(f"Warning: {len(duplicate_index)} duplicated transactions found based on index.")
+    print(f"Duplicated transactions saved to {duplicate_index_file}")
+else:
+    print("No duplicated transactions found based on index.")
+
+# Step 11: Extract dates from the column headers and map them to the rates
+# Convert the column headings to extract dates for comparison
+date_columns = [col for col in base_rates_df.columns if 'Hourly Rate' in col]
+date_list = []
+invalid_dates = []
+
+for col in date_columns:
+    # Extract the date from the column name
+    try:
+        date_str = col.split(' ')[-1]
+        date = pd.to_datetime(date_str, format='%d/%m/%Y')
+        date_list.append((col, date))
+    except ValueError:
+        invalid_dates.append(col)  # Skip columns that don't have a valid date
+
+if invalid_dates:
+    print("Invalid date columns:")
+    print(invalid_dates)
+else:
+    print("All date columns are valid.")
+
+# Define a function to map the correct rate based on the "DATE WORKED" field in merged_df
+def get_base_rate(row, base_rates_df, date_list):
+    # Find the matching row based on the 'Grade-Step OR Course Code'
+    grade_step = row['Grade-Step OR Course Code']
+
+    # Filter base_rates_df to find the correct row for the level/step
+    rate_row = base_rates_df[base_rates_df['Level/Step'] == grade_step]
+
+    if rate_row.empty:
+        return np.nan  # No match found for the level/step
+
+    # Iterate over the date list and find the appropriate rate based on 'DATE WORKED'
+    # Iterate in reverse to pick up the correct rate for earlier periods
+    for i, (col, date) in enumerate(date_list):
+        if row['DATE WORKED'] <= date:
+            # If it's the first column, return it as is
+            if i == 0:
+                return rate_row[col].values[0]
+            # Otherwise, return the rate from the previous column
+            return rate_row[date_list[i-1][0]].values[0]
+
+    # If no date condition matched, return the latest rate (i.e., the last available column rate)
+    return rate_row[date_list[-1][0]].values[0]
+
+
+# Step 13: Apply the function to the merged_df to create the 'base_rate' column
+merged_df['base_rate'] = merged_df.apply(lambda row: get_base_rate(row, base_rates_df, date_list), axis=1)
+
+# Step 14: Output the final table to Parquet and Excel
+merged_df.to_parquet(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN.parquet', index=False)
+#merged_df.head(2000).to_excel(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN_sample.xlsx', index=False)
+merged_df.to_excel(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN_sample.xlsx', index=False)
+print("Final table saved to Parquet and Excel.")
