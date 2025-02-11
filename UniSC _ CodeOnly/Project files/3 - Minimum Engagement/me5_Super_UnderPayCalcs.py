@@ -41,7 +41,53 @@ timesheet_df['sum_WeekendPens'] = (
 ).clip(lower=0)
 # For the above limit values to zero no negatives values
 
+timesheet_df['cal_wknd_penalty_sat'] = pd.to_numeric(timesheet_df['cal_wknd_penalty_sat']) 
+timesheet_df['cal_wknd_penalty_sun'] = pd.to_numeric(timesheet_df['cal_wknd_penalty_sun'])
 
+
+# conditions = [
+#     {
+#         "condition": (
+#             (timesheet_df['cal_wknd_penalty_sat'] > 0) &  
+#             (timesheet_df['cal_wknd_penalty_sun'] == 0) 
+#         ),
+#         "true_value": 0.2,
+#         "false_value": 0,
+#     },
+#     {
+#         "condition": (
+#             (timesheet_df['cal_wknd_penalty_sat'] == 0) &  
+#             (timesheet_df['cal_wknd_penalty_sun'] > 0) 
+#         ),
+#         "true_value": 0.5,
+#         "false_value": 0,
+#     },
+   
+# ]
+
+
+
+# # Initialise the Weekened Penality Factor column with default values
+# timesheet_df['Weekend_Pens_Factor'] = 0
+
+# timesheet_df['Weekend_Pens_Factor'] = pd.to_numeric(timesheet_df['Weekend_Pens_Factor'])
+
+# # Apply conditions iteratively for Wkend Pen Factor
+# for cond in conditions:
+#     timesheet_df['Weekend_Pens_Factor'] = np.where(
+#         cond["condition"],
+#         cond["true_value"],  # Value if condition is True
+#         timesheet_df['Weekend_Pens_Factor']  # Keep the current value if False
+
+#     )
+
+
+
+
+# Example: your DataFrame (ensure you replace this with your actual timesheet_df)
+# timesheet_df = pd.DataFrame(...)
+
+# Define the conditions
 conditions = [
     {
         "condition": (
@@ -49,7 +95,7 @@ conditions = [
             (timesheet_df['cal_wknd_penalty_sun'] == 0) 
         ),
         "true_value": 0.2,
-        "false_value": 0,
+        "false_value": 0,  # Not used, since we directly update with .loc
     },
     {
         "condition": (
@@ -57,29 +103,26 @@ conditions = [
             (timesheet_df['cal_wknd_penalty_sun'] > 0) 
         ),
         "true_value": 0.5,
-        "false_value": 0,
+        "false_value": 0,  # Not used
     },
-   
+    # Add more conditions if needed
 ]
 
-
-
-# Initialise the Weekened Penality Factor column with default values
+# Initialise the Weekend Penalty Factor column with default values (0)
 timesheet_df['Weekend_Pens_Factor'] = 0
 
-
-# Apply conditions iteratively for Wkend Pen Factor
+# Apply conditions iteratively using .loc
 for cond in conditions:
-    timesheet_df['Weekend_Pens_Factor'] = np.where(
-        cond["condition"],
-        cond["true_value"],  # Value if condition is True
-        timesheet_df['Weekend_Pens_Factor']  # Keep the current value if False
+    timesheet_df.loc[cond["condition"], 'Weekend_Pens_Factor'] = cond["true_value"]
 
-    )
+# At this point, 'Weekend_Pens_Factor' is updated with the values based on your conditions.
+
 
 # Initialise the Weekend Pen Dollar Amount column with default values
 timesheet_df['Weekend_Pens_DollarCalcAmt'] = 0 
-
+timesheet_df['Weekend_Pens_DollarCalcAmt'] = pd.to_numeric(timesheet_df['Weekend_Pens_DollarCalcAmt'])
+timesheet_df['sum_WeekendPens'] = pd.to_numeric(timesheet_df['sum_WeekendPens'])
+timesheet_df['base_rate'] = pd.to_numeric(timesheet_df['base_rate'])
 
 # Need to multipe
 # Multiple sum_WeekendPens by Base Rate and apply Sat or Sun loading to give the dollar amount owed 
@@ -89,11 +132,19 @@ timesheet_df['Weekend_Pens_DollarCalcAmt'] = timesheet_df['sum_WeekendPens'] * t
 
 #Compare this dollar amount with the discrepancyamount_excel (column DL )
 
+timesheet_df['discrepancy_amount_excl'] = pd.to_numeric(timesheet_df['discrepancy_amount_excl'])
+
+timesheet_df['weekendPensComp'] = 0
+timesheet_df['weekendPensComp'] = pd.to_numeric(timesheet_df['weekendPensComp'])
+
+
 timesheet_df['weekendPensComp'] = timesheet_df['Weekend_Pens_DollarCalcAmt'] - timesheet_df['discrepancy_amount_excl']
+
 
 
 # Initialise the recalc Weekend Pens column with default values
 timesheet_df['recalc_Weekend_Pens'] = 0 
+timesheet_df['recalc_Weekend_Pens'] = pd.to_numeric(timesheet_df['recalc_Weekend_Pens'])
 
 conditions_recalc = [
     {
@@ -108,13 +159,12 @@ conditions_recalc = [
     }
 ]
 
-# Apply conditions iteratively for recalc Weekend Pens
+
+# Apply conditions iteratively using .loc
 for cond in conditions_recalc:
-    timesheet_df['recalc_Weekend_Pens'] = np.where(
-        cond["condition"],
-        cond["true_value"],  # Value if condition is True
-        cond["false_value"]  # Keep the current value if False
-    )
+    timesheet_df.loc[cond["condition"], 'recalc_Weekend_Pens'] = cond["true_value"]
+
+
 
 
 
@@ -144,7 +194,6 @@ timesheet_df['compInterestFactor'] = 0
 
 
 timesheet_df.to_parquet(output_cleaned_data + 'timesheet_min_top_up_cals_Super.parquet', index=False)
-timesheet_df.to_csv(output_cleaned_data + 'timesheet_min_top_up_cals_Super.csv', index=False)
 
 '''
 Formula logic 
