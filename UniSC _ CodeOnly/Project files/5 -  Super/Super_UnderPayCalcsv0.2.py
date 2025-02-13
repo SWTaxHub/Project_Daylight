@@ -165,13 +165,6 @@ for cond in conditions_recalc:
     timesheet_df.loc[cond["condition"], 'recalc_Weekend_Pens'] = cond["true_value"]
 
 
-# # Apply conditions iteratively for recalc Weekend Pens
-# for cond in conditions_recalc:
-#     timesheet_df['recalc_Weekend_Pens'] = np.where(
-#         cond["condition"],
-#         cond["true_value"],  # Value if condition is True
-#         cond["false_value"]  # Keep the current value if False
-#     )
 
 
 

@@ -2,21 +2,76 @@ import pandas as pd
 import numpy as np
 
 
+
+# 30/01/2024 addition of 2024 H2 data -  concat dfs together 
+
+
 # Step 1: Load the Timesheet data and apply correct data types
-def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, output_directory, output_tests):
+#def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, output_directory, output_tests):
+#def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, sheet3_name, output_directory, output_tests):
+def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, sheet3_name, output_directory, output_tests):
+     
+
     # Load both worksheets
     df1 = pd.read_excel(file_path, sheet_name=sheet1_name)
     df2 = pd.read_excel(file_path, sheet_name=sheet2_name)
 
-    # Automatically rename 'Pay Code' in df2 to 'PIN_NM'
-    df2.rename(columns={'Pay Code': 'PIN_NM'}, inplace=True)
+    #Add new df for 2024 H2 data
+    df3 = pd.read_excel(file_path_H2_24, sheet_name=sheet3_name)
+
+
+
 
     # Remove columns that contain all null or blank values
     df1_cleaned = df1.dropna(axis=1, how='all')
     df2_cleaned = df2.dropna(axis=1, how='all')
+    df3_cleaned = df3.dropna(axis=1, how='all')
+
+
+
+    df1_cleaned['G_BREAK_MINUTES'] = pd.to_numeric(df1_cleaned['G_BREAK_MINUTES'], errors='coerce')
+    df2_cleaned['G_BREAK_MINUTES'] = pd.to_numeric(df2_cleaned['G_BREAK_MINUTES'], errors='coerce')
+    
+
+    if 'G_BREAK' in df3_cleaned.columns:
+        df3_cleaned = df3_cleaned.rename(columns={'G_BREAK': 'G_BREAK_MINUTES'})
+
+
+    if 'Pay Code' in df2_cleaned.columns:
+        df2_cleaned.rename(columns={'Pay Code': 'PIN_NM'})
+
+   
+    
+   
+
+    df3_cleaned['G_BREAK_MINUTES'] = pd.to_numeric(df3_cleaned['G_BREAK_MINUTES'], errors='coerce')
+    df3_cleaned['G_MINUTES'] = pd.to_numeric(df3_cleaned['G_MINUTES'], errors='coerce')
+   
+
+    df3_cleaned['G_HOURS_WORKED'] = pd.to_numeric(df3_cleaned['G_HOURS_WORKED'], errors='coerce')
+
+
+
+    column_mapping = {
+        'G3FORM_ID': 'eFORM_ID',
+        'G_AMOUNT_CLAIMED': 'UNITS_CLAIMED',
+        'G_BREAK': 'G_BREAK_MINUTES',
+        'G_HOURS_WORKED': 'G_ELAPSED_HOURS_WORKED',
+        'G_MINUTES': 'G_ELAPSED_MINUTES_WORKED',
+        'Depart Desc': 'Department Name',
+        'ACCT_CD': 'GL_Cost_Account',
+        'G_USC_GL_PYTYP_CMB': 'Grade-Step OR Course Code',
+        'DESCR': 'Position Title'
+    }
+    
+  
+
+
+
+    df3_cleaned.rename(columns=column_mapping, inplace=True)
 
     # Combine both dataframes
-    combined_df = pd.concat([df1_cleaned, df2_cleaned], ignore_index=True)
+    combined_df = pd.concat([df1_cleaned, df2_cleaned, df3_cleaned], ignore_index=True)
 
     # Correct data types based on your specification
     text_columns = ['eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'G3FORM_CONDITION', 'G3FORM_STATUS', 'CAL_PRD_ID',
@@ -90,16 +145,20 @@ def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, output_directo
 
     combined_df_filtered = combined_df_filtered.drop_duplicates(
         subset=['EMPLID', 'EMPL_RCD', 'PIN_NM', 'DATE WORKED', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM']
+
     )
 
     
-
-
     print(f"Number of rows: {len(combined_df_filtered)}")
 
     # Combine with rows where both BEGINDTTM and ENDDTTM are NaN (unaffected rows)
     combined_df_final = pd.concat(
         [combined_df[combined_df[['BEGINDTTM', 'ENDDTTM']].isna().all(axis=1)], combined_df_filtered])
+    
+    #combined_df_final = combined_df_final.drop(columns=['PIN_NM', 'Day of week', 'Weekend Penalty', 
+     #                                                     '> 22/11/2023 Span of Hours', 'Unnamed: 39'])
+
+    
 
     print(f"Number of rows after removing duplicates: {len(combined_df_final)}")
 
@@ -148,9 +207,13 @@ def load_and_clean_hr_data(hr_file_path, hr_sheet_name, output_directory):
 # File path and sheet names for timesheet data
 #Commented out Paul's file path
 #file_path = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\UniSC Data Transfer 2 Sept\Timesheet Data - Master File 2016 -2019 & 2020 - 2024.xlsx'
-file_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\UniSC Data Transfer 2 Sept\Timesheet Data - Master File 2016 -2019 & 2020 - 2024.xlsx"
+file_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\UniSC Data Transfer 2 Sept\Timesheet Data - Master File 2016 -2019 & 2020 - 2024 (incl full 2024 year).xlsx"
 sheet1_name = '2016-2019'
 sheet2_name = '2020-2024'
+
+#file path for H2 2024
+file_path_H2_24 = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\UniSC Data Transfer 2 Sept\Timesheet Data - H2 2024 Combined.xlsx"
+sheet3_name = 'COMBINED'
 
 # File path for HR master data
 #hr_file_path = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\UniSC Data Transfer 2 Sept\EMD data.xlsx'
@@ -161,10 +224,11 @@ hr_sheet_name = 'EMD DATA'
 #Commented out Paul's file path
 #output_directory = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data\\'
 output_directory = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\\"
-output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
+#output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
+output_tests =r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Tests\\"
 
 # Load, clean, and save the timesheet data
-load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, output_directory, output_tests)
+load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, sheet3_name, output_directory, output_tests)
 
 # Load, clean, and save the HR master data
 load_and_clean_hr_data(hr_file_path, hr_sheet_name, output_directory)
