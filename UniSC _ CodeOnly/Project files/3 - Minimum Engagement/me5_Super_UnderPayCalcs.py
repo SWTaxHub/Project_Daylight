@@ -165,7 +165,11 @@ for cond in conditions_recalc:
     timesheet_df.loc[cond["condition"], 'recalc_Weekend_Pens'] = cond["true_value"]
 
 
-
+timesheet_df['Total_Shortfall_excl_Interest'] = timesheet_df['one_hour_top_up_cash'] + \
+                                                timesheet_df['two_hour_top_up_cash'] + \
+                                                timesheet_df['three_hour_top_up_cash'] + \
+                                                timesheet_df['recalc_Weekend_Pens'] + \
+                                                timesheet_df['cal_shift_top_up']
 
 
 
@@ -198,22 +202,22 @@ interestRates = pd.read_csv(r"C:\Users\smits\OneDrive - SW Accountants & Advisor
 
 
 # Ensure both columns are in datetime format
-timesheet_df['DATE WORKED'] = pd.to_datetime(timesheet_df['DATE WORKED'], errors='coerce')
-interestRates['DATE'] = pd.to_datetime(interestRates['DATE'], errors='coerce')
+timesheet_df['Pay Date'] = pd.to_datetime(timesheet_df['Pay Date'], errors='coerce')
+interestRates['Wages Paid Date'] = pd.to_datetime(interestRates['Wages Paid Date'], errors='coerce')
 
 # Now merge
 timesheet_df = timesheet_df.merge(
-    interestRates[['DATE', 'Daily rate']], 
-    left_on='DATE WORKED', 
-    right_on='DATE', 
+    interestRates[['Wages Paid Date', 'Daily Simple Factor']], 
+    left_on='Pay Date', 
+    right_on='Wages Paid Date', 
     how='left'
 )
 
 # Fill NaN values if no match was found
-timesheet_df['Daily rate'] = timesheet_df['Daily rate'].fillna(0)
+timesheet_df['Daily Simple Factor'] = timesheet_df['Daily Simple Factor'].fillna(0)
 
 # Rename for clarity
-timesheet_df.rename(columns={'Daily rate': 'compInterestFactor'}, inplace=True)
+timesheet_df.rename(columns={'Daily Simple Factor': 'compInterestFactor'}, inplace=True)
 
 
 
@@ -226,10 +230,7 @@ timesheet_df.rename(columns={'Daily rate': 'compInterestFactor'}, inplace=True)
 # #Initialise recalc weekend Penalities with Interest Applied column 
 
 
-timesheet_df['recalc_Weekend_Pens_wthInterest'] = 0
 
-
-import numpy as np
 
 timesheet_df['recalc_Weekend_Pens_wthInterest'] = np.where(
     timesheet_df['recalc_Weekend_Pens'].notna() & (timesheet_df['recalc_Weekend_Pens'] != 0), 
@@ -262,6 +263,13 @@ timesheet_df['cal_shift_topup_withInterest'] = np.where(
 )
 
 
+timesheet_df['Total_Shortfall_incl_Interest'] = timesheet_df['recalc_Weekend_Pens_wthInterest'] + \
+                                                timesheet_df['1hrTopup_withInterest'] + \
+                                                timesheet_df['2hrTopup_withInterest'] + \
+                                                timesheet_df['3hrTopup_withInterest'] + \
+                                                timesheet_df['cal_shift_topup_withInterest']
+
+
 # #Super Payments for Weekend Pens
 timesheet_df['Super_from_weekendPens'] = timesheet_df['recalc_Weekend_Pens_wthInterest'] * sgRate
 
@@ -281,7 +289,11 @@ timesheet_df['Super_from_1hrTopup'] = timesheet_df['one_hour_top_up_cash'] * sgR
 timesheet_df['Super_from_CasualShiftTopup'] = timesheet_df['cal_shift_topup_withInterest'] * sgRate
 
 
-
+timesheet_df['Total_Super_Shortfall'] = timesheet_df['Super_from_weekendPens'] + \
+                                        timesheet_df['Super_from_1hrTopup'] + \
+                                        timesheet_df['Super_from_2hrTopup'] + \
+                                        timesheet_df['Super_from_3hrTopup'] + \
+                                        timesheet_df['Super_from_CasualShiftTopup']
 
 
 
