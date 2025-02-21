@@ -168,32 +168,15 @@ for cond in conditions_recalc:
 
 
 
-#Super Guarentee Rate
-sgRate = 0.115
-
-#Super Payments for 3 hour top up 
-timesheet_df['Super_from_3hrTopup'] = timesheet_df['three_hour_top_up_cash'] * sgRate
-
-
-#Super Payments for 2 hour top up
-timesheet_df['Super_from_2hrTopup'] = timesheet_df['two_hour_top_up_cash'] * sgRate
-
-# #Super Payments for 1 hour top up
-
-timesheet_df['Super_from_1hrTopup'] = timesheet_df['one_hour_top_up_cash'] * sgRate
-
-
-# #Casual shift top up
-timesheet_df['Super_from_CasualShiftTopup'] = timesheet_df['cal_shift_top_up'] * sgRate
 
 #Initialise Interest Compound Interest Factor column
 
-timesheet_df['compInterestFactor'] = 0 
+#timesheet_df['compInterestFactor'] = 0 
 
 
 
 
-timesheet_df.to_parquet(output_cleaned_data + 'timesheet_min_top_up_cals_Super.parquet', index=False)
+
 
 '''
 Formula logic 
@@ -206,6 +189,33 @@ then get factor from the compound interest factor table for that row
 '''
 
 
+#Super Guarentee Rate
+sgRate = 0.115
+
+
+interestRates = pd.read_csv(r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\InterestRates.csv")
+
+
+
+# Ensure both columns are in datetime format
+timesheet_df['DATE WORKED'] = pd.to_datetime(timesheet_df['DATE WORKED'], errors='coerce')
+interestRates['DATE'] = pd.to_datetime(interestRates['DATE'], errors='coerce')
+
+# Now merge
+timesheet_df = timesheet_df.merge(
+    interestRates[['DATE', 'Daily rate']], 
+    left_on='DATE WORKED', 
+    right_on='DATE', 
+    how='left'
+)
+
+# Fill NaN values if no match was found
+timesheet_df['Daily rate'] = timesheet_df['Daily rate'].fillna(0)
+
+# Rename for clarity
+timesheet_df.rename(columns={'Daily rate': 'compInterestFactor'}, inplace=True)
+
+
 
 #Commented out on 19/12/24 Interest Calcs - USC have asked for the interest free outputs
 
@@ -216,46 +226,59 @@ then get factor from the compound interest factor table for that row
 # #Initialise recalc weekend Penalities with Interest Applied column 
 
 
+timesheet_df['recalc_Weekend_Pens_wthInterest'] = 0
 
 
+import numpy as np
 
+timesheet_df['recalc_Weekend_Pens_wthInterest'] = np.where(
+    timesheet_df['recalc_Weekend_Pens'].notna() & (timesheet_df['recalc_Weekend_Pens'] != 0), 
+    timesheet_df['recalc_Weekend_Pens'] * 1 + timesheet_df['compInterestFactor'], 
+    0
+)
 
-# final_timesheet_df['recalc_Weekend_Pens_wthInterest'] = 0
+timesheet_df['3hrTopup_withInterest'] = np.where(
+    timesheet_df['three_hour_top_up_cash'].notna() & (timesheet_df['three_hour_top_up_cash'] != 0), 
+    timesheet_df['three_hour_top_up_cash'] * 1 + timesheet_df['compInterestFactor'], 
+    0
+)
 
-# #recalc weekend pens with Interest applied 
-# final_timesheet_df['recalc_Weekend_Pens_wthInterest'] = final_timesheet_df['recalc_Weekend_Pens'] * final_timesheet_df['compInterestFactor'] 
+timesheet_df['2hrTopup_withInterest'] = np.where(
+    timesheet_df['two_hour_top_up_cash'].notna() & (timesheet_df['two_hour_top_up_cash'] != 0), 
+    timesheet_df['two_hour_top_up_cash'] * 1 + timesheet_df['compInterestFactor'], 
+    0
+)
 
-# #3 hr top with Interest applied 
-# final_timesheet_df['3hrTopup_withInterest'] = final_timesheet_df['three_hour_top_up_cash'] * final_timesheet_df['compInterestFactor'] 
+timesheet_df['1hrTopup_withInterest'] = np.where(
+    timesheet_df['one_hour_top_up_cash'].notna() & (timesheet_df['one_hour_top_up_cash'] != 0), 
+    timesheet_df['one_hour_top_up_cash'] * 1 + timesheet_df['compInterestFactor'], 
+    0
+)
 
-# #2hr top up with Interest Applied
-# final_timesheet_df['2hrTopup_withInterest'] = final_timesheet_df['two_hour_top_up_cash'] * final_timesheet_df['compInterestFactor'] 
-
-# #1hr top up with Interest applied 
-# final_timesheet_df['1hrTopup_withInterest'] = final_timesheet_df['one_hour_top_up_cash'] * final_timesheet_df['compInterestFactor'] 
-
-# #Calc Shift with Interest Applied
-# final_timesheet_df['cal_shift_topup_withInterest'] = final_timesheet_df['cal_shift_top_up'] * final_timesheet_df['compInterestFactor']
-
+timesheet_df['cal_shift_topup_withInterest'] = np.where(
+    timesheet_df['cal_shift_top_up'].notna() & (timesheet_df['cal_shift_top_up'] != 0), 
+    timesheet_df['cal_shift_top_up'] * 1 + timesheet_df['compInterestFactor'], 
+    0
+)
 
 
 # #Super Payments for Weekend Pens
-# final_timesheet_df['Super_from_weekendPens'] = final_timesheet_df['recalc_Weekend_Pens_wthInterest'] * sgRate
+timesheet_df['Super_from_weekendPens'] = timesheet_df['recalc_Weekend_Pens_wthInterest'] * sgRate
 
 
 # #Super Payments for 3 hour top up 
-# final_timesheet_df['Super_from_3hrTopup'] = final_timesheet_df['3hrTopup_withInterest'] * sgRate
+timesheet_df['Super_from_3hrTopup'] = timesheet_df['3hrTopup_withInterest'] * sgRate
 
 
 # #Super Payments for 2 hour top up
-# final_timesheet_df['Super_from_2hrTopup'] = final_timesheet_df['2hrTopup_withInterest'] * sgRate
+timesheet_df['Super_from_2hrTopup'] = timesheet_df['2hrTopup_withInterest'] * sgRate
 
 # #Super Payments for 1 hour top up
-# final_timesheet_df['Super_from_1hrTopup'] = final_timesheet_df['one_hour_top_up_cash'] * sgRate
+timesheet_df['Super_from_1hrTopup'] = timesheet_df['one_hour_top_up_cash'] * sgRate
 
 
 # #Casual shift top up
-# final_timesheet_df['Super_from_CasualShiftTopup'] = final_timesheet_df['cal_shift_topup_withInterest'] * sgRate
+timesheet_df['Super_from_CasualShiftTopup'] = timesheet_df['cal_shift_topup_withInterest'] * sgRate
 
 
 
@@ -263,7 +286,7 @@ then get factor from the compound interest factor table for that row
 
 
 
-# final_timesheet_df.to_csv('final_output.csv')
+# timesheet_df.to_csv('final_output.csv')
 
 # #print(timesheet_df.head)
 
@@ -279,3 +302,6 @@ then get factor from the compound interest factor table for that row
 # #two_hour_top_up_cash
 # #cal_shift_top_up
 
+
+
+timesheet_df.to_parquet(output_cleaned_data + 'timesheet_min_top_up_cals_Super.parquet', index=False)
