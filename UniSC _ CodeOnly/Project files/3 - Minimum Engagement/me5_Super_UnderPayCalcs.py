@@ -205,6 +205,33 @@ interestRates = pd.read_csv(r"C:\Users\smits\OneDrive - SW Accountants & Advisor
 timesheet_df['Pay Date'] = pd.to_datetime(timesheet_df['Pay Date'], errors='coerce')
 interestRates['Wages Paid Date'] = pd.to_datetime(interestRates['Wages Paid Date'], errors='coerce')
 
+
+
+
+
+# Get unique values
+timesheet_dates = set(timesheet_df['Pay Date'].unique())
+interest_rates_dates = set(interestRates['Wages Paid Date'].unique())
+
+# Find matches and non-matches
+matching_dates = timesheet_dates.intersection(interest_rates_dates)
+non_matching_timesheet = timesheet_dates - interest_rates_dates
+non_matching_interest_rates = interest_rates_dates - timesheet_dates
+
+# Print results
+print(f"Number of matching dates: {len(matching_dates)}")
+print(f"Number of non-matching dates in timesheet_df: {len(non_matching_timesheet)}")
+print(f"Number of non-matching dates in interestRates: {len(non_matching_interest_rates)}")
+
+
+
+# Find non-matching dates
+non_matching_dates = list(timesheet_dates.symmetric_difference(interest_rates_dates))
+print(f"Number of non-matching dates: {len(non_matching_dates)}")
+print("List of non-matching dates:", non_matching_dates)
+
+
+
 # Now merge
 timesheet_df = timesheet_df.merge(
     interestRates[['Wages Paid Date', 'Daily Simple Factor']], 

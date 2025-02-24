@@ -68,16 +68,16 @@ duplicate_combinations.to_csv('potental_rule_breakers.csv')
 '''
 
 # Mark combinations of DATE WORKED and EMPLID that occur more than once
-matching_transactions['Is_Duplicate'] = matching_transactions.groupby(['DATE WORKED', 'EMPLID'])['EMPLID'].transform('size') > 1
+# matching_transactions['Is_Duplicate'] = matching_transactions.groupby(['DATE WORKED', 'EMPLID'])['EMPLID'].transform('size') > 1
 
-# Filter the DataFrame to keep only rows where the condition is true
-condensed_data = matching_transactions[matching_transactions['Is_Duplicate']]
+# # Filter the DataFrame to keep only rows where the condition is true
+# condensed_data = matching_transactions[matching_transactions['Is_Duplicate']]
 
 
 
-# Display the condensed DataFrame
-print(condensed_data)
-condensed_data.to_csv('potential_rule_breakers.csv')
+# # Display the condensed DataFrame
+# print(condensed_data)
+# condensed_data.to_csv('potential_rule_breakers.csv')
 
 
 
