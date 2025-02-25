@@ -293,7 +293,9 @@ pin_nm_list = ['CASUAL', 'OT', 'CALLBACK', 'SHIFT100', 'SHIFT50', 'SHIFT150', 'S
 
 CAS_ACAD_list = ['TUTORSTP2', 'LECTBASIC', 'TUTORRPT', 'TUTORING', 'OTHERACT2', 'TUTORRPT2', 'MARKING',
                       'OTHERACTIV', 'MARKING2', 'LECTRPT', 'LECTDEVEL', 'MARKSUPVR', 'TRCASUAL', 'ADDIT',
-                        'LECTSPEC', 'SESSDAY', 'MISCDUTIES', 'MISCDUT2']
+                        'LECTSPEC', 'SESSDAY', 'MISCDUTIES', 'MISCDUT2', 'ONCALLUSC', 'CLINFAC']
+
+# Not sure where ONCALLUSC and CLINFAC are meant to sit. They only exist from H2 2024 onwards.
 
 
 # Step 1a: Create columns for each PIN_NM value
