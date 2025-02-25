@@ -261,31 +261,31 @@ timesheet_df.rename(columns={'Daily Simple Factor': 'compInterestFactor'}, inpla
 
 timesheet_df['recalc_Weekend_Pens_wthInterest'] = np.where(
     timesheet_df['recalc_Weekend_Pens'].notna() & (timesheet_df['recalc_Weekend_Pens'] != 0), 
-    timesheet_df['recalc_Weekend_Pens'] * 1 + timesheet_df['compInterestFactor'], 
+    timesheet_df['recalc_Weekend_Pens'] * (1 + timesheet_df['compInterestFactor']), 
     0
 )
 
 timesheet_df['3hrTopup_withInterest'] = np.where(
     timesheet_df['three_hour_top_up_cash'].notna() & (timesheet_df['three_hour_top_up_cash'] != 0), 
-    timesheet_df['three_hour_top_up_cash'] * 1 + timesheet_df['compInterestFactor'], 
+    timesheet_df['three_hour_top_up_cash'] * (1 + timesheet_df['compInterestFactor']), 
     0
 )
 
 timesheet_df['2hrTopup_withInterest'] = np.where(
     timesheet_df['two_hour_top_up_cash'].notna() & (timesheet_df['two_hour_top_up_cash'] != 0), 
-    timesheet_df['two_hour_top_up_cash'] * 1 + timesheet_df['compInterestFactor'], 
+    timesheet_df['two_hour_top_up_cash'] * (1 + timesheet_df['compInterestFactor']), 
     0
 )
 
 timesheet_df['1hrTopup_withInterest'] = np.where(
     timesheet_df['one_hour_top_up_cash'].notna() & (timesheet_df['one_hour_top_up_cash'] != 0), 
-    timesheet_df['one_hour_top_up_cash'] * 1 + timesheet_df['compInterestFactor'], 
+    timesheet_df['one_hour_top_up_cash'] * (1 + timesheet_df['compInterestFactor']), 
     0
 )
 
 timesheet_df['cal_shift_topup_withInterest'] = np.where(
     timesheet_df['cal_shift_top_up'].notna() & (timesheet_df['cal_shift_top_up'] != 0), 
-    timesheet_df['cal_shift_top_up'] * 1 + timesheet_df['compInterestFactor'], 
+    timesheet_df['cal_shift_top_up'] * (1 + timesheet_df['compInterestFactor']), 
     0
 )
 
