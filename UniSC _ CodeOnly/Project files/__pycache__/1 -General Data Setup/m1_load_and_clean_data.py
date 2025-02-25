@@ -38,9 +38,11 @@ def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, sheet3_name, o
 
 
     if 'Pay Code' in df2_cleaned.columns:
-        df2_cleaned.rename(columns={'Pay Code': 'PIN_NM'})
+        df2_cleaned.rename(columns={'Pay Code': 'PIN_NM'}, inplace=True) 
+
 
    
+    print(df2_cleaned['PIN_NM'].unique())
     
    
 
@@ -165,12 +167,21 @@ def load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, sheet3_name, o
     # Save the cleaned timesheet data in Parquet format
     combined_df_final.to_parquet(output_directory + 'cleaned_combined_timesheet_data.parquet', index=False)
 
+
+
     # Save the top 2000 rows of the timesheet data as an Excel sample
-    combined_df_final.head(2000).to_excel(output_directory + 'sample_combined_timesheet_data.xlsx', index=False)
+    #combined_df_final.head(2000).to_excel(output_directory + 'sample_combined_timesheet_data.xlsx', index=False)
+
+    # Test to see where the nan values are coming from
+    combined_df_final.to_excel(output_directory + 'sample_combined_timesheet_data.xlsx', index=False)
 
     print("Cleaned timesheet data saved.")
 
+    print("Timesheet combined PIN_NM unique values: ", combined_df_final['PIN_NM'].unique())
+
     return combined_df_final  # Optional, you can remove this if no reference is needed
+
+
 
 
 # Step 2: Load the HR master data and apply correct data types
@@ -232,5 +243,9 @@ load_and_clean_timesheet(file_path, sheet1_name, sheet2_name, sheet3_name, outpu
 
 # Load, clean, and save the HR master data
 load_and_clean_hr_data(hr_file_path, hr_sheet_name, output_directory)
+
+
+
+
 
 print("Data cleaning and saving completed successfully.")

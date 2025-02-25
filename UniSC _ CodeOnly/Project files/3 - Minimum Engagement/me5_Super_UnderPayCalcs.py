@@ -290,6 +290,8 @@ timesheet_df['cal_shift_topup_withInterest'] = np.where(
 )
 
 
+# - takes the sum of the amounts due from the one, two and three top ups, along with the recalculated weekend penalties and casual shift top up
+
 timesheet_df['Total_Shortfall_incl_Interest'] = timesheet_df['recalc_Weekend_Pens_wthInterest'] + \
                                                 timesheet_df['1hrTopup_withInterest'] + \
                                                 timesheet_df['2hrTopup_withInterest'] + \

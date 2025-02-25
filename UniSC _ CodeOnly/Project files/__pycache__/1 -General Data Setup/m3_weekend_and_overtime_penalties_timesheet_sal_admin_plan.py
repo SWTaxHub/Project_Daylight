@@ -1,6 +1,7 @@
 import pandas as pd
 import os  # Import os to handle directory operations
 import numpy as np
+import time
 
 # Step 1: Define paths for files and output directories
 #Commented out Paul's file paths for testing
@@ -115,8 +116,52 @@ if invalid_dates:
 else:
     print("All date columns are valid.")
 
+# Sort date_list once before applying the function
+date_list.sort(key=lambda x: x[1])
+
+# Create lookup dictionary for base rates before applying function
+rate_dict = {}
+for _, row in base_rates_df.iterrows():
+    grade_step = row['Level/Step']
+    rates = {col: row[col] for col in date_columns}
+    rate_dict[grade_step] = rates
+
+
+def get_base_rate_optimized(row, rate_dict, date_list):
+    grade_step = row['Grade-Step OR Course Code']
+    
+    # Quick lookup instead of filtering DataFrame
+    if grade_step not in rate_dict:
+        return np.nan
+    
+    rates = rate_dict[grade_step]
+    date_worked = row['DATE WORKED']
+    
+    # Binary search through sorted dates
+    left, right = 0, len(date_list)
+    while left < right:
+        mid = (left + right) // 2
+        if date_list[mid][1] >= date_worked:
+            right = mid
+        else:
+            left = mid + 1
+            
+    if left == 0:
+        return rates[date_list[0][0]]
+    if left == len(date_list):
+        return rates[date_list[-1][0]]
+    return rates[date_list[left-1][0]]
+
+# Apply optimized function
+merged_df['base_rate'] = merged_df.apply(
+    lambda row: get_base_rate_optimized(row, rate_dict, date_list), 
+    axis=1
+)
+
+
 # Define a function to map the correct rate based on the "DATE WORKED" field in merged_df
 def get_base_rate(row, base_rates_df, date_list):
+    
     # Find the matching row based on the 'Grade-Step OR Course Code'
     grade_step = row['Grade-Step OR Course Code']
 
@@ -139,12 +184,29 @@ def get_base_rate(row, base_rates_df, date_list):
     # If no date condition matched, return the latest rate (i.e., the last available column rate)
     return rate_row[date_list[-1][0]].values[0]
 
+start_time = time.time()
 
-# Step 13: Apply the function to the merged_df to create the 'base_rate' column
-merged_df['base_rate'] = merged_df.apply(lambda row: get_base_rate(row, base_rates_df, date_list), axis=1)
+# Process in chunks for better performance
+chunk_size = 10000
+base_rates = []
+
+for chunk_start in range(0, len(merged_df), chunk_size):
+    chunk_end = min(chunk_start + chunk_size, len(merged_df))
+    chunk = merged_df.iloc[chunk_start:chunk_end]
+    
+    chunk_rates = chunk.apply(
+        lambda row: get_base_rate_optimized(row, rate_dict, date_list),
+        axis=1
+    )
+    base_rates.extend(chunk_rates)
+
+merged_df['base_rate'] = base_rates
+
+end_time = time.time()
+print(f"Execution time: {end_time - start_time:.2f} seconds")
 
 # Step 14: Output the final table to Parquet and Excel
 merged_df.to_parquet(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN.parquet', index=False)
-#merged_df.head(2000).to_excel(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN_sample.xlsx', index=False)
-merged_df.to_excel(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN_sample.xlsx', index=False)
+merged_df.head(2000).to_excel(output_cleaned_data + 'timesheet_include_SAL_ADMIN_PLAN_sample.xlsx', index=False)
 print("Final table saved to Parquet and Excel.")
+
