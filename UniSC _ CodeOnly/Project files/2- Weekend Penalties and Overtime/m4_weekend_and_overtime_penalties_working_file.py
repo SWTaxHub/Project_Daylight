@@ -289,11 +289,24 @@ else:
 
 # Adding SESS to the list to see academic casuals 
 
-pin_nm_list = ['CASUAL', 'OT', 'CALLBACK', 'SHIFT100', 'SHIFT50', 'SHIFT150', 'SATCASUAL', 'SUNCASUAL', 'ADDIT', 'SHIFT15', 'CASUAL-ORD']
+#Commented out to ADDIT because it was in both lists and suspect it belongs to Casual acedamic 
+#pin_nm_list = ['CASUAL', 'OT', 'CALLBACK', 'SHIFT100', 'SHIFT50', 'SHIFT150', 'SATCASUAL', 'SUNCASUAL', 'ADDIT', 'SHIFT15', 'CASUAL-ORD']
+
+pin_nm_list = ['CASUAL', 'OT', 'CALLBACK', 'SHIFT100', 'SHIFT50', 'SHIFT150', 'SATCASUAL', 'SUNCASUAL', 'SHIFT15', 'CASUAL-ORD']
+
+
 
 CAS_ACAD_list = ['TUTORSTP2', 'LECTBASIC', 'TUTORRPT', 'TUTORING', 'OTHERACT2', 'TUTORRPT2', 'MARKING',
                       'OTHERACTIV', 'MARKING2', 'LECTRPT', 'LECTDEVEL', 'MARKSUPVR', 'TRCASUAL', 'ADDIT',
-                        'LECTSPEC', 'SESSDAY', 'MISCDUTIES', 'MISCDUT2', 'ONCALLUSC', 'CLINFAC']
+                        'LECTSPEC', 'SESSDAY', 'MISCDUTIES', 'MISCDUT2', 'ONCALLUSC', 'CLINFAC'] 
+
+
+
+# Looks likely that CASUAL-ORD is meant to be in the CAS_ACAD_list. I have added it to the pin_nm_list
+
+# Looks likely that TRCASUAL is meant to be in the pin_nm_list. I have added it to the CAS_ACAD_list.
+
+# Not sure if CALLBACK, SATCASUAL< SHIFT15, SHIFT50, SHIFT100 and SHIFT150 is meant to be in the Casual academic list. I have added it to the pin_nm_list.
 
 # Not sure where ONCALLUSC and CLINFAC are meant to sit. They only exist from H2 2024 onwards.
 

@@ -47,6 +47,15 @@ timesheet_df.loc[timesheet_df['DATE WORKED'] > cutoff_date, 'OT_Cas_Loading_Disc
 ) * timesheet_df['base_rate'] * loading_factor
 
 
+# Interest on OT CAS LOADING DISCRP
+
+timesheet_df['OT_Cas_Loading_Discrp_withInterest'] = np.where(
+    timesheet_df['OT_Cas_Loading_Discrp'].notna() & (timesheet_df['OT_Cas_Loading_Discrp'] != 0), 
+    timesheet_df['OT_Cas_Loading_Discrp'] * (1 + timesheet_df['compInterestFactor']), 
+    0
+)
+
+
 # 'ts_ot_ph' - all 0 
 # 'ts_ot_sunday' - all 0
 # 'ts_ot_first_three' - all 0

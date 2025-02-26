@@ -53,6 +53,62 @@ matching_transactions.loc[:, 'DATE WORKED'] = pd.to_datetime(matching_transactio
 # Filter rows where 'DATE WORKED' is after 01/01/2017
 matching_transactions = matching_transactions[matching_transactions['DATE WORKED'] >= '2017-01-01']
 
+# Add code block to make values past 30/06/2024 null for several columns
+
+# added 26/02/2025
+
+# Convert DATE_WORKED to datetime format
+matching_transactions['DATE_WORKED'] = pd.to_datetime(matching_transactions['DATE_WORKED'], dayfirst=True)
+
+# Define the cutoff date
+cutoff_date = pd.Timestamp("2024-06-30")
+
+# List of columns to overwrite with NaN
+columns_to_nullify = [
+    "cal_ot_span_weekend_hours", "cal_ot_span_as_hours", "cal_ot_span_bs_hours",
+    "penalty_reptm", "date_only", "adjusted_daily_hours", "daily_hrs_count",
+    "cal_daily_ot_hours", "incremental_daily_ot_hours", "week_start_date",
+    "EMPLID_week_id", "adjusted_weekly_hours", "weekly_hrs_count", 
+    "cal_weekly_ot_hours", "incremental_weekly_ot_hours", "cal_OT_hours", 
+    "cal_sunday_ot", "timesheet", "cal_PH_ot", "cummulative_cal_OT_hours",
+    "prior_cummulative_cal_OT_hours", "cal_first_3_ot", "cal_post_3_ot",
+    "cal_wknd_penalty_sat", "cal_wknd_penalty_sun", "cal_balance_hours", 
+    "ts_factor", "cal_factor_incl", "cal_factor_excl", "cal_factor_may17",
+    "factor_difference_incl", "discrepancy_amount_incl", "factor_difference_excl",
+    "discrepancy_amount_excl", "factor_difference_may17", "discrepancy_amount_may17",
+    "cal_shift_top_up", "Cal_OT_Hours_Aggregated", "G_Break_Minutes_Aggregated",
+    "ENDDTTM_timeOnly", "Meal_Allowance_Code", "Meal_Allowance", "is_student",
+    "is_perm", "minimum_hours", "gap_hours", "conseq_cumul_sumhrs", "EMPLID_date_only",
+    "ex_1_3hrs_day", "gap_hours_sub", "is_first_shift", "cond_new_emplid",
+    "cond_new_date", "cond_midnight_straddle", "cond_midnight_carryover",
+    "first_prior_gap_found", "elapsed_hrs", "three_hour_top_up", "one_hour_top_up",
+    "two_hour_top_up", "condition_1_position_nbr", "condition_2_elapsed_hrs",
+    "condition_3_ex_1_3hrs_day", "condition_4_date_worked", "condition_5_gap_and_elapsed",
+    "one_hour_min_elapsed_hrs", "adjusted_base_rate", "three_hour_top_up_cash",
+    "one_hour_top_up_cash", "two_hour_top_up_cash", "sum_WeekendPens",
+    "Weekend_Pens_Factor", "Weekend_Pens_DollarCalcAmt", "weekendPensComp",
+    "recalc_Weekend_Pens", "Total_Shortfall_excl_Interest", "Wages Paid Date",
+    "compInterestFactor", "recalc_Weekend_Pens_wthInterest", "3hrTopup_withInterest",
+    "2hrTopup_withInterest", "1hrTopup_withInterest", "cal_shift_topup_withInterest",
+    "Super_from_weekendPens", "Super_from_3hrTopup", "Super_from_2hrTopup",
+    "Super_from_1hrTopup", "Super_from_CasualShiftTopup", "Total_Super_Shortfall"
+]
+
+# Apply condition to set selected columns to NaN
+matching_transactions.loc[matching_transactions['DATE_WORKED'] > cutoff_date, columns_to_nullify] = np.nan
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Group by DATE WORKED and EMPLID, and count occurrences
 '''
 duplicate_combinations = matching_transactions.groupby(['DATE WORKED', 'EMPLID']).size().reset_index(name='Count')
