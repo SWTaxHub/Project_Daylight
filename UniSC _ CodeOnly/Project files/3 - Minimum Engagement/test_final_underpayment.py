@@ -58,7 +58,7 @@ matching_transactions = matching_transactions[matching_transactions['DATE WORKED
 # added 26/02/2025
 
 # Convert DATE_WORKED to datetime format
-matching_transactions['DATE_WORKED'] = pd.to_datetime(matching_transactions['DATE_WORKED'], dayfirst=True)
+matching_transactions['DATE WORKED'] = pd.to_datetime(matching_transactions['DATE WORKED'], dayfirst=True)
 
 # Define the cutoff date
 cutoff_date = pd.Timestamp("2024-06-30")
@@ -95,7 +95,7 @@ columns_to_nullify = [
 ]
 
 # Apply condition to set selected columns to NaN
-matching_transactions.loc[matching_transactions['DATE_WORKED'] > cutoff_date, columns_to_nullify] = np.nan
+matching_transactions.loc[matching_transactions['DATE WORKED'] > cutoff_date, columns_to_nullify] = np.nan
 
 
 
