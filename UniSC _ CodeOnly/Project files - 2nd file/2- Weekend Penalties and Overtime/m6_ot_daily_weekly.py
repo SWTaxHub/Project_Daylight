@@ -420,9 +420,20 @@ timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
 
 
 # Step 8: Calculate factor_difference_excl
-timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.minimum(
+# timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.minimum(
+#     timesheet_cas_OT_daily_weekly['avg_cal_loading'] - timesheet_cas_OT_daily_weekly['average_ts_loading'], 0 
+# )
+
+# Amended to maximum to ensure negative values are not considered
+# Step 8: Calculate factor_difference_excl
+timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.maximum(
     timesheet_cas_OT_daily_weekly['avg_cal_loading'] - timesheet_cas_OT_daily_weekly['average_ts_loading'], 0 
 )
+
+
+# timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.minimum(
+#     timesheet_cas_OT_daily_weekly['avg_cal_loading'] - timesheet_cas_OT_daily_weekly['average_ts_loading'], 0 
+# )
 
 # Step 9: Calculate discrepancy_amount_excl
 timesheet_cas_OT_daily_weekly['wknd_discrepancy_amount_excl'] = (
