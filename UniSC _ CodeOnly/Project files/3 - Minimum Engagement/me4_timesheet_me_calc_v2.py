@@ -10,11 +10,10 @@ import os
 #output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
 
 
-
 #Sam's file paths
 
 timesheet_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_with_student_and_perm_indicator.parquet"
-
+                                                                            
 #timesheet_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals_MealAllowance.parquet"
 
 #timesheet_min_top_up_cals.parquet
@@ -552,10 +551,6 @@ timesheet_min_top_up_cals['two_hour_top_up_cash'] = np.where(
 timesheet_min_top_up_cals.to_parquet(output_cleaned_data + 'timesheet_min_top_up_cals.parquet', index=False)
 
 
-
-
-#Extra step for testing purposes
-timesheet_min_top_up_cals.to_csv('testChangestoTopUps.csv')
 
 # Check rows before 01/01/2023
 print(timesheet_min_top_up_cals[timesheet_min_top_up_cals['DATE WORKED'] < pd.Timestamp('2023-01-01')][['DATE WORKED', 'three_hour_top_up']])

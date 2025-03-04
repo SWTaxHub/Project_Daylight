@@ -299,8 +299,8 @@ timesheet_df['Total_Shortfall_incl_Interest'] = timesheet_df['recalc_Weekend_Pen
                                                 timesheet_df['cal_shift_topup_withInterest']
 
 
-# #Super Payments for Weekend Pens
-timesheet_df['Super_from_weekendPens'] = timesheet_df['recalc_Weekend_Pens_wthInterest'] * sgRate
+# # #Super Payments for Weekend Pens
+# timesheet_df['Super_from_weekendPens'] = timesheet_df['recalc_Weekend_Pens_wthInterest'] * sgRate
 
 
 # #Super Payments for 3 hour top up 
@@ -325,6 +325,13 @@ timesheet_df['Total_Super_Shortfall'] = timesheet_df['Super_from_weekendPens'] +
                                         timesheet_df['Super_from_CasualShiftTopup']
 
 
+# Interest on OT CAS LOADING DISCRP
+
+timesheet_df['OT_Cas_Loading_Discrp_withInterest'] = np.where(
+    timesheet_df['OT_Cas_Loading_Discrp'].notna() & (timesheet_df['OT_Cas_Loading_Discrp'] != 0), 
+    timesheet_df['OT_Cas_Loading_Discrp'] * (1 + timesheet_df['compInterestFactor']), 
+    0
+)
 
 
 # timesheet_df.to_csv('final_output.csv')

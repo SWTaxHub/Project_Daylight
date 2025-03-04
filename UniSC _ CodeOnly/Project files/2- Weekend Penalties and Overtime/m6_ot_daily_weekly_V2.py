@@ -278,24 +278,24 @@ timesheet_cas_OT_daily_weekly['cal_post_3_ot'] = np.where(
 )
 
 # New Field: cal_wknd_penalty_sat
-# # Step 6: Calculate weekend penalty for Saturday (DOTW == 1, Rule - Weekend Penalty == 'y', and DATE WORKED >= Rule - greater than date)
-# timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] = np.where(
-#     (timesheet_cas_OT_daily_weekly['DOTW'] == 1) &
-#     (timesheet_cas_OT_daily_weekly['Rule - Weekend Penalty'] == 'y') &
-#     (timesheet_cas_OT_daily_weekly['DATE WORKED'] >= timesheet_cas_OT_daily_weekly['Rule - greater than date']),
-#     timesheet_cas_OT_daily_weekly['total_hours'] - timesheet_cas_OT_daily_weekly['cal_OT_hours'],
-#     0
-# )
+# Step 6: Calculate weekend penalty for Saturday (DOTW == 1, Rule - Weekend Penalty == 'y', and DATE WORKED >= Rule - greater than date)
+timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] = np.where(
+    (timesheet_cas_OT_daily_weekly['DOTW'] == 1) &
+    (timesheet_cas_OT_daily_weekly['Rule - Weekend Penalty'] == 'y') &
+    (timesheet_cas_OT_daily_weekly['DATE WORKED'] >= timesheet_cas_OT_daily_weekly['Rule - greater than date']),
+    timesheet_cas_OT_daily_weekly['total_hours'] - timesheet_cas_OT_daily_weekly['cal_OT_hours'],
+    0
+)
 
-# # New Field: cal_wknd_penalty_sun
-# # Step 7: Calculate weekend penalty for Sunday (DOTW == 2, Rule - Weekend Penalty == 'y', and DATE WORKED >= Rule - greater than date)
-# timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] = np.where(
-#     (timesheet_cas_OT_daily_weekly['DOTW'] == 2) &
-#     (timesheet_cas_OT_daily_weekly['Rule - Weekend Penalty'] == 'y') &
-#     (timesheet_cas_OT_daily_weekly['DATE WORKED'] >= timesheet_cas_OT_daily_weekly['Rule - greater than date']),
-#     timesheet_cas_OT_daily_weekly['total_hours'] - timesheet_cas_OT_daily_weekly['cal_OT_hours'],
-#     0
-# )
+# New Field: cal_wknd_penalty_sun
+# Step 7: Calculate weekend penalty for Sunday (DOTW == 2, Rule - Weekend Penalty == 'y', and DATE WORKED >= Rule - greater than date)
+timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] = np.where(
+    (timesheet_cas_OT_daily_weekly['DOTW'] == 2) &
+    (timesheet_cas_OT_daily_weekly['Rule - Weekend Penalty'] == 'y') &
+    (timesheet_cas_OT_daily_weekly['DATE WORKED'] >= timesheet_cas_OT_daily_weekly['Rule - greater than date']),
+    timesheet_cas_OT_daily_weekly['total_hours'] - timesheet_cas_OT_daily_weekly['cal_OT_hours'],
+    0
+)
 
 
 # Step 7: Create OT split fields based on conditions
@@ -361,63 +361,20 @@ timesheet_cas_OT_daily_weekly['ts_ot_post_three'] = np.where(
 )
 
 # Discrepancy calculations
-# # Step 1: Calculate cal_balance_hours (subtract Results hours from total_hours)
-# timesheet_cas_OT_daily_weekly['cal_balance_hours'] = (
-#     timesheet_cas_OT_daily_weekly['total_hours']
-#     - timesheet_cas_OT_daily_weekly['cal_sunday_ot']
-#     - timesheet_cas_OT_daily_weekly['cal_PH_ot']
-#     - timesheet_cas_OT_daily_weekly['cal_first_3_ot']
-#     - timesheet_cas_OT_daily_weekly['cal_post_3_ot']
-#     - timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat']
-#     - timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun']
-# )
+# Step 1: Calculate cal_balance_hours (subtract Results hours from total_hours)
+timesheet_cas_OT_daily_weekly['cal_balance_hours'] = (
+    timesheet_cas_OT_daily_weekly['total_hours']
+    - timesheet_cas_OT_daily_weekly['cal_sunday_ot']
+    - timesheet_cas_OT_daily_weekly['cal_PH_ot']
+    - timesheet_cas_OT_daily_weekly['cal_first_3_ot']
+    - timesheet_cas_OT_daily_weekly['cal_post_3_ot']
+    - timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat']
+    - timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun']
+)
 
 # Step 2: Calculate ts_factor based on date
-# timesheet_cas_OT_daily_weekly['ts_factor'] = np.where(
-#     timesheet_cas_OT_daily_weekly['DATE WORKED'] <= pd.Timestamp('2017-05-12'),
-#     (
-#         timesheet_cas_OT_daily_weekly['CASUAL_hours'] * 1.00 +
-#         timesheet_cas_OT_daily_weekly['SHIFT100_hours'] * 2.00 +
-#         timesheet_cas_OT_daily_weekly['SHIFT50_hours'] * 1.50 +
-#         timesheet_cas_OT_daily_weekly['SHIFT150_hours'] * 2.50 +
-#         timesheet_cas_OT_daily_weekly['SATCASUAL_hours'] * 1.20 +
-#         timesheet_cas_OT_daily_weekly['SUNCASUAL_hours'] * 1.50 +
-#         timesheet_cas_OT_daily_weekly['ADDIT_hours'] * 1.00 +
-#         timesheet_cas_OT_daily_weekly['SHIFT15_hours'] * 1.15 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_ph'] * 2.50 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_sunday'] * 2.00 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_first_three'] * 1.50 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_post_three'] * 2.00
-#     ),
-#     (
-#         timesheet_cas_OT_daily_weekly['CASUAL_hours'] * 1.00 +
-#         timesheet_cas_OT_daily_weekly['SHIFT100_hours'] * 2.00 +
-#         timesheet_cas_OT_daily_weekly['SHIFT50_hours'] * 1.50 +
-#         timesheet_cas_OT_daily_weekly['SHIFT150_hours'] * 2.50 +
-#         timesheet_cas_OT_daily_weekly['SATCASUAL_hours'] * 1.20 +
-#         timesheet_cas_OT_daily_weekly['SUNCASUAL_hours'] * 1.50 +
-#         timesheet_cas_OT_daily_weekly['ADDIT_hours'] * 1.00 +
-#         timesheet_cas_OT_daily_weekly['SHIFT15_hours'] * 1.15 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_ph'] / 1.25 * 2.50 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_sunday'] / 1.25 * 2.00 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_first_three'] / 1.25 * 1.50 +
-#         timesheet_cas_OT_daily_weekly['ts_ot_post_three'] / 1.25 * 2.00
-#     )
-# )
-
-# OT
-
-
-
-
-# 1 - if total calc OT is equal to zero then its 0 
-# 2 - if TS post three OT is 0 then it will be the total hours (i.e. the whole block below other than post three) less 
-# 
-timesheet_cas_OT_daily_weekly['average_ts_loading'] = np.where(
-
- timesheet_cas_OT_daily_weekly['DATE WORKED'] <= ('2017-05-12') 
- #pd.Timestamp('2017-05-12') 
- ,
+timesheet_cas_OT_daily_weekly['ts_factor'] = np.where(
+    timesheet_cas_OT_daily_weekly['DATE WORKED'] <= pd.Timestamp('2017-05-12'),
     (
         timesheet_cas_OT_daily_weekly['CASUAL_hours'] * 1.00 +
         timesheet_cas_OT_daily_weekly['SHIFT100_hours'] * 2.00 +
@@ -431,7 +388,7 @@ timesheet_cas_OT_daily_weekly['average_ts_loading'] = np.where(
         timesheet_cas_OT_daily_weekly['ts_ot_sunday'] * 2.00 +
         timesheet_cas_OT_daily_weekly['ts_ot_first_three'] * 1.50 +
         timesheet_cas_OT_daily_weekly['ts_ot_post_three'] * 2.00
-    ) / timesheet_cas_OT_daily_weekly['total_hours'],
+    ),
     (
         timesheet_cas_OT_daily_weekly['CASUAL_hours'] * 1.00 +
         timesheet_cas_OT_daily_weekly['SHIFT100_hours'] * 2.00 +
@@ -445,58 +402,83 @@ timesheet_cas_OT_daily_weekly['average_ts_loading'] = np.where(
         timesheet_cas_OT_daily_weekly['ts_ot_sunday'] / 1.25 * 2.00 +
         timesheet_cas_OT_daily_weekly['ts_ot_first_three'] / 1.25 * 1.50 +
         timesheet_cas_OT_daily_weekly['ts_ot_post_three'] / 1.25 * 2.00
-    ) / timesheet_cas_OT_daily_weekly['total_hours']
+    )
 )
 
-
-
+# Step 3: Calculate cal_factor_incl (with standard rates)
+timesheet_cas_OT_daily_weekly['cal_factor_incl'] = (
+    timesheet_cas_OT_daily_weekly['cal_sunday_ot'] * 2.00 +
+    timesheet_cas_OT_daily_weekly['cal_PH_ot'] * 2.50 +
+    timesheet_cas_OT_daily_weekly['cal_first_3_ot'] * 1.50 +
+    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] * 2.00 +
+    timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] * 1.20 +
+    timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] * 1.50 +
+    timesheet_cas_OT_daily_weekly['cal_balance_hours'] * 1.00
+)
 
 # Step 4: Calculate cal_factor_excl (with rates divided by 1.25)
-timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
+timesheet_cas_OT_daily_weekly['cal_factor_excl'] = (
     timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
     timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
     timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 
-    ) > 0,
-
-    ((
-    timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
-    timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
-    timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 
-    ) 
-    / (timesheet_cas_OT_daily_weekly['cal_sunday_ot'] +
-    timesheet_cas_OT_daily_weekly['cal_PH_ot']  +
-    timesheet_cas_OT_daily_weekly['cal_first_3_ot']  +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot']  )),
-    0
+    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 +
+    timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] * 1.20 +
+    timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] * 1.50 +
+    timesheet_cas_OT_daily_weekly['cal_balance_hours'] * 1.00
 )
 
-
-
-# Step 8: Calculate factor_difference_excl
-# timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.minimum(
-#     timesheet_cas_OT_daily_weekly['avg_cal_loading'] - timesheet_cas_OT_daily_weekly['average_ts_loading'], 0 
-# )
-
-# Step 8: Calculate factor_difference_excl
-# Changed to maximum to ensure that the discrepancy amount is not negative
-
-timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.maximum(
-    timesheet_cas_OT_daily_weekly['avg_cal_loading'] - timesheet_cas_OT_daily_weekly['average_ts_loading'], 0 
+# Step 5: Calculate cal_factor_may17 based on date
+timesheet_cas_OT_daily_weekly['cal_factor_may17'] = np.where(
+    timesheet_cas_OT_daily_weekly['DATE WORKED'] <= pd.Timestamp('2017-05-12'),
+    (
+        timesheet_cas_OT_daily_weekly['cal_sunday_ot'] * 2.00 +
+        timesheet_cas_OT_daily_weekly['cal_PH_ot'] * 2.50 +
+        timesheet_cas_OT_daily_weekly['cal_first_3_ot'] * 1.50 +
+        timesheet_cas_OT_daily_weekly['cal_post_3_ot'] * 2.00 +
+        timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] * 1.20 +
+        timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] * 1.50 +
+        timesheet_cas_OT_daily_weekly['cal_balance_hours'] * 1.00
+    ),
+    (
+        timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
+        timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
+        timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
+        timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 +
+        timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] * 1.20 +
+        timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] * 1.50 +
+        timesheet_cas_OT_daily_weekly['cal_balance_hours'] * 1.00
+    )
 )
 
+# Step 6: Calculate factor_difference_incl
+timesheet_cas_OT_daily_weekly['factor_difference_incl'] = np.minimum(
+    timesheet_cas_OT_daily_weekly['ts_factor'] - timesheet_cas_OT_daily_weekly['cal_factor_incl'], 0
+)
+
+# Step 7: Calculate discrepancy_amount_incl
+timesheet_cas_OT_daily_weekly['discrepancy_amount_incl'] = (
+    -timesheet_cas_OT_daily_weekly['factor_difference_incl'] * timesheet_cas_OT_daily_weekly['base_rate']
+)
+
+# Step 8: Calculate factor_difference_excl
+timesheet_cas_OT_daily_weekly['factor_difference_excl'] = np.minimum(
+    timesheet_cas_OT_daily_weekly['ts_factor'] - timesheet_cas_OT_daily_weekly['cal_factor_excl'], 0
+)
 
 # Step 9: Calculate discrepancy_amount_excl
 timesheet_cas_OT_daily_weekly['discrepancy_amount_excl'] = (
-    timesheet_cas_OT_daily_weekly['base_rate'] * timesheet_cas_OT_daily_weekly['loading_difference_excl'] 
-    * (timesheet_cas_OT_daily_weekly['cal_sunday_ot'] +
-    timesheet_cas_OT_daily_weekly['cal_PH_ot']  +
-    timesheet_cas_OT_daily_weekly['cal_first_3_ot']  +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot']  )
+    -timesheet_cas_OT_daily_weekly['factor_difference_excl'] * timesheet_cas_OT_daily_weekly['base_rate']
 )
 
+# Step 10: Calculate factor_difference_may17
+timesheet_cas_OT_daily_weekly['factor_difference_may17'] = np.minimum(
+    timesheet_cas_OT_daily_weekly['ts_factor'] - timesheet_cas_OT_daily_weekly['cal_factor_may17'], 0
+)
 
+# Step 11: Calculate discrepancy_amount_may17
+timesheet_cas_OT_daily_weekly['discrepancy_amount_may17'] = (
+    -timesheet_cas_OT_daily_weekly['factor_difference_may17'] * timesheet_cas_OT_daily_weekly['base_rate']
+)
 
 # Step 12: Calculate cal_shift_top_up based on DATE WORKED, penalty_reptm, and PIN_NM conditions
 timesheet_cas_OT_daily_weekly['cal_shift_top_up'] = np.select(

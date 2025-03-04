@@ -7,7 +7,8 @@ import datetime
 #timesheet_min_top_up_cals_path = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals.parquet'
 #timesheet_min_top_up_cals_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals.parquet"
 #Penalties_Recalc = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\timesheet_min_top_up_cals_Super.parquet"
-Penalties_Recalc = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals_Super.parquet"
+Penalties_Recalc = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals.parquet"
+
 
 #output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
 output_tests = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Tests\\"
@@ -15,14 +16,15 @@ output_tests = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Des
 #timesheet_min_top_up_cals = pd.read_parquet(timesheet_min_top_up_cals_path)
 Penalties_Recalc = pd.read_parquet(Penalties_Recalc)
 
+print(Penalties_Recalc.columns)
+
 # Step 3: Find all unique EMPID_week_id where any of the specified overtime conditions are met in timesheet_cas_OT_daily_weekly
 condition_ot = (
     (Penalties_Recalc['cal_weekly_ot_hours'] > 0) |
     (Penalties_Recalc['cal_daily_ot_hours'] > 0) |
     (Penalties_Recalc['cal_ot_span_as_hours'] > 0) |
     (Penalties_Recalc['cal_ot_span_bs_hours'] > 0) |
-    (Penalties_Recalc['cal_ot_span_weekend_hours'] > 0) |
-    (Penalties_Recalc['OT_Cas_Loading_Discrp'] != 0)
+    (Penalties_Recalc['cal_ot_span_weekend_hours'] > 0)
 )
 
 # Filter for unique EMPID_week_id where overtime conditions are met
@@ -72,10 +74,12 @@ columns_to_nullify = [
     "cal_weekly_ot_hours", "incremental_weekly_ot_hours", "cal_OT_hours", 
     "cal_sunday_ot", "timesheet", "cal_PH_ot", "cummulative_cal_OT_hours",
     "prior_cummulative_cal_OT_hours", "cal_first_3_ot", "cal_post_3_ot",
-    "cal_wknd_penalty_sat", "cal_wknd_penalty_sun", "cal_balance_hours", 
+   # "cal_wknd_penalty_sat", "cal_wknd_penalty_sun", "cal_balance_hours", 
     "ts_factor", "cal_factor_incl", "cal_factor_excl", "cal_factor_may17",
-    "factor_difference_incl", "discrepancy_amount_incl", "factor_difference_excl",
-    "discrepancy_amount_excl", "factor_difference_may17", "discrepancy_amount_may17",
+    #"factor_difference_incl", "discrepancy_amount_incl",
+     "avg_cal_loading", "average_ts_loading",
+     "loading_difference_excl",
+    "discrepancy_amount_excl", # "factor_difference_may17", "discrepancy_amount_may17",
     "cal_shift_top_up", "Cal_OT_Hours_Aggregated", "G_Break_Minutes_Aggregated",
     "ENDDTTM_timeOnly", "Meal_Allowance_Code", "Meal_Allowance", "is_student",
     "is_perm", "minimum_hours", "gap_hours", "conseq_cumul_sumhrs", "EMPLID_date_only",
@@ -85,13 +89,13 @@ columns_to_nullify = [
     "two_hour_top_up", "condition_1_position_nbr", "condition_2_elapsed_hrs",
     "condition_3_ex_1_3hrs_day", "condition_4_date_worked", "condition_5_gap_and_elapsed",
     "one_hour_min_elapsed_hrs", "adjusted_base_rate", "three_hour_top_up_cash",
-    "one_hour_top_up_cash", "two_hour_top_up_cash", "sum_WeekendPens",
-    "Weekend_Pens_Factor", "Weekend_Pens_DollarCalcAmt", "weekendPensComp",
-    "recalc_Weekend_Pens", "Total_Shortfall_excl_Interest", "Wages Paid Date",
-    "compInterestFactor", "recalc_Weekend_Pens_wthInterest", "3hrTopup_withInterest",
-    "2hrTopup_withInterest", "1hrTopup_withInterest", "cal_shift_topup_withInterest",
-    "Super_from_weekendPens", "Super_from_3hrTopup", "Super_from_2hrTopup",
-    "Super_from_1hrTopup", "Super_from_CasualShiftTopup", "Total_Super_Shortfall"
+    "one_hour_top_up_cash", "two_hour_top_up_cash" # "sum_WeekendPens",
+    #"Weekend_Pens_Factor", "Weekend_Pens_DollarCalcAmt", "weekendPensComp",
+    #"recalc_Weekend_Pens", "Total_Shortfall_excl_Interest", "Wages Paid Date",
+    #"compInterestFactor", "recalc_Weekend_Pens_wthInterest", "3hrTopup_withInterest",
+    #"2hrTopup_withInterest", "1hrTopup_withInterest", "cal_shift_topup_withInterest",
+    #"Super_from_weekendPens", "Super_from_3hrTopup", "Super_from_2hrTopup",
+    #"Super_from_1hrTopup", "Super_from_CasualShiftTopup", "Total_Super_Shortfall"
 ]
 
 # Apply condition to set selected columns to NaN
@@ -139,7 +143,7 @@ duplicate_combinations.to_csv('potental_rule_breakers.csv')
 
 # Step 6: Output the matching transactions to Excel as a sample
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-output_file = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_{current_date}.xlsx')
+output_file = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME{current_date}.xlsx')
 matching_transactions.head(100000).to_excel(output_file, index=False)
 
 print(f"Sample of matching transactions with overtime and top-up cash saved to {output_file}")
