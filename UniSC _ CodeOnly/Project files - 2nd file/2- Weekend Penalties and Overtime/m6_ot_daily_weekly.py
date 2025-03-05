@@ -404,7 +404,7 @@ timesheet_cas_OT_daily_weekly['average_ts_loading'] = np.where(
 
 
 
-# Step 4: Calculate cal_factor_excl (with rates divided by 1.25)
+# Step 4: Calculate cal_factor_excl 
 timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
     timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] * 1.5 +
     timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] * 1.2 
@@ -435,12 +435,19 @@ timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.maximum(
 #     timesheet_cas_OT_daily_weekly['avg_cal_loading'] - timesheet_cas_OT_daily_weekly['average_ts_loading'], 0 
 # )
 
+
 # Step 9: Calculate discrepancy_amount_excl
 timesheet_cas_OT_daily_weekly['wknd_discrepancy_amount_excl'] = (
     timesheet_cas_OT_daily_weekly['base_rate'] * timesheet_cas_OT_daily_weekly['loading_difference_excl'] 
     * (timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] +
     timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'])
     )
+
+
+
+
+
+
 
 
 # # Step 9: Calculate discrepancy_amount_excl
@@ -464,6 +471,7 @@ loading_factor = 1 - (1 / 1.25)
 
 # Convert cutoff_date to datetime.date
 cutoff_date = pd.to_datetime('2024-06-30').date()
+
 
 # Apply the conditions
 timesheet_cas_OT_daily_weekly.loc[timesheet_cas_OT_daily_weekly['date_only'] <= cutoff_date, 'OT_Cas_Loading_Discrp'] = (
