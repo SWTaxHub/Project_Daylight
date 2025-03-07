@@ -450,41 +450,19 @@ timesheet_cas_OT_daily_weekly['average_ts_loading'] = np.where(
 
 
 
-# Step 4: Calculate cal_factor_excl (with rates divided by 1.25)
-timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
-    timesheet_cas_OT_daily_weekly['cal_sunday_ot'] * 2.00 +
-    timesheet_cas_OT_daily_weekly['cal_PH_ot'] * 2.50 +
-    timesheet_cas_OT_daily_weekly['cal_first_3_ot'] * 1.50 +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] * 2.00 
-    ) > 0,
-
-    ((
-    timesheet_cas_OT_daily_weekly['cal_sunday_ot'] * 2.00 +
-    timesheet_cas_OT_daily_weekly['cal_PH_ot'] * 2.50 +
-    timesheet_cas_OT_daily_weekly['cal_first_3_ot'] * 1.50 +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] * 2.00 
-    ) 
-    / (timesheet_cas_OT_daily_weekly['cal_sunday_ot'] +
-    timesheet_cas_OT_daily_weekly['cal_PH_ot']  +
-    timesheet_cas_OT_daily_weekly['cal_first_3_ot']  +
-    timesheet_cas_OT_daily_weekly['cal_post_3_ot']  )),
-    0
-)
-
-
 # # Step 4: Calculate cal_factor_excl (with rates divided by 1.25)
 # timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
-#     timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
-#     timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
-#     timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
-#     timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 
+#     timesheet_cas_OT_daily_weekly['cal_sunday_ot'] * 2.00 +
+#     timesheet_cas_OT_daily_weekly['cal_PH_ot'] * 2.50 +
+#     timesheet_cas_OT_daily_weekly['cal_first_3_ot'] * 1.50 +
+#     timesheet_cas_OT_daily_weekly['cal_post_3_ot'] * 2.00 
 #     ) > 0,
 
 #     ((
-#     timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
-#     timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
-#     timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
-#     timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 
+#     timesheet_cas_OT_daily_weekly['cal_sunday_ot'] * 2.00 +
+#     timesheet_cas_OT_daily_weekly['cal_PH_ot'] * 2.50 +
+#     timesheet_cas_OT_daily_weekly['cal_first_3_ot'] * 1.50 +
+#     timesheet_cas_OT_daily_weekly['cal_post_3_ot'] * 2.00 
 #     ) 
 #     / (timesheet_cas_OT_daily_weekly['cal_sunday_ot'] +
 #     timesheet_cas_OT_daily_weekly['cal_PH_ot']  +
@@ -492,6 +470,28 @@ timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
 #     timesheet_cas_OT_daily_weekly['cal_post_3_ot']  )),
 #     0
 # )
+
+
+# Step 4: Calculate cal_factor_excl (with rates divided by 1.25)
+timesheet_cas_OT_daily_weekly['avg_cal_loading'] = np.where((
+    timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
+    timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
+    timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
+    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 
+    ) > 0,
+
+    ((
+    timesheet_cas_OT_daily_weekly['cal_sunday_ot'] / 1.25 * 2.00 +
+    timesheet_cas_OT_daily_weekly['cal_PH_ot'] / 1.25 * 2.50 +
+    timesheet_cas_OT_daily_weekly['cal_first_3_ot'] / 1.25 * 1.50 +
+    timesheet_cas_OT_daily_weekly['cal_post_3_ot'] / 1.25 * 2.00 
+    ) 
+    / (timesheet_cas_OT_daily_weekly['cal_sunday_ot'] +
+    timesheet_cas_OT_daily_weekly['cal_PH_ot']  +
+    timesheet_cas_OT_daily_weekly['cal_first_3_ot']  +
+    timesheet_cas_OT_daily_weekly['cal_post_3_ot']  )),
+    0
+)
 
 
 
@@ -509,18 +509,11 @@ timesheet_cas_OT_daily_weekly['loading_difference_excl'] = np.maximum(
 
 
 
-timesheet_cas_OT_daily_weekly['base_rate_excl'] = np.where(
-    timesheet_cas_OT_daily_weekly['DATE WORKED'] > ('2017-05-12') ,
-    timesheet_cas_OT_daily_weekly['base_rate'] / 1.25,
-    0
-
-)
-
 
 
 # Step 9: Calculate discrepancy_amount_excl
 timesheet_cas_OT_daily_weekly['discrepancy_amount_excl'] = (
-    timesheet_cas_OT_daily_weekly['base_rate_excl'] * timesheet_cas_OT_daily_weekly['loading_difference_excl'] 
+    timesheet_cas_OT_daily_weekly['base_rate'] * timesheet_cas_OT_daily_weekly['loading_difference_excl'] 
     * (timesheet_cas_OT_daily_weekly['cal_sunday_ot'] +
     timesheet_cas_OT_daily_weekly['cal_PH_ot']  +
     timesheet_cas_OT_daily_weekly['cal_first_3_ot']  +
