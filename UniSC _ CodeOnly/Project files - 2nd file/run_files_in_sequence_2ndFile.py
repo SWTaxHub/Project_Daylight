@@ -79,7 +79,11 @@ if __name__ == "__main__":
         
         r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m6_ot_daily_weekly.py",
         # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m7_meal_allowance_calcs.py",
+       
         r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m7_meal_allowance_calcs.py",
+         r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\3 - Minimum Engagement\me1_Summarise_HR_with_status.py",
+        r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\3 - Minimum Engagement\me2_timesheet_student.py",
+        r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\3 - Minimum Engagement\me3_timesheet_student_perm.py",
         # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\3 - Minimum Engagement\me2_timesheet_student.py",
         #r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\3 - Minimum Engagement\me2_timesheet_student.py",
        #r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\3 - Minimum Engagement\me3_timesheet_student_perm.py",

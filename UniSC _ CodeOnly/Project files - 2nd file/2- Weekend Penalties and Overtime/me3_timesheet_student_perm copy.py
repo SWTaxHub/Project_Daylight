@@ -4,7 +4,14 @@ import pandas as pd
 #output_directory = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data'
 output_directory = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\\"
 
-timesheet_with_student_indicator_path = output_directory + r'\timesheet_with_student_indicator.parquet'
+#timesheet_with_student_indicator_path = output_directory + r'\timesheet_with_student_indicator.parquet'
+
+timesheet_with_student_indicator_path = output_directory + r'\timesheet_cas_OT_daily_weekly.parquet'
+
+
+
+
+
 summary_hr_data_permanent_path = output_directory + r'\summary_hr_data_permanent.parquet'
 #output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
 output_tests = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Tests\\"
@@ -27,18 +34,10 @@ timesheet_df_filtered.to_csv('timesheet_df_filtered.csv')
 # added 30/01/24 due to run error where columns were different
 
 # Rename the column 'old_column_name' to 'new_column_name'
-#summary_hr_df.rename(columns={'EMPID_EMPL_RCD': 'EMPLID'}, inplace=True)
-
-print(summary_hr_df.dtypes)  # Check data types of all columns
-print(summary_hr_df['EMPLID'].head())  # Inspect first few rows
-
+summary_hr_df.rename(columns={'EMPID_EMPL_RCD': 'EMPLID'}, inplace=True)
 
 # Shorten the 'column_name' to 7 characters (left to right)
-#summary_hr_df['EMPLID'] = summary_hr_df['EMPLID'].astype(str).str[:7].fillna('')
 summary_hr_df['EMPLID'] = summary_hr_df['EMPLID'].str[:7]
-#summary_hr_df['EMPLID'] = summary_hr_df['EMPLID'].astype(str).str[:7].fillna('')
-
-
 print('summaryHR columns: ')
 print(summary_hr_df.columns)
 
