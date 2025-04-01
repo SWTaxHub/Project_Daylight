@@ -274,6 +274,8 @@ timesheet_cas_OT_daily_weekly['cal_post_3_ot'] = np.where(
 # Step 6: Calculate weekend penalty for Saturday (DOTW == 1, Rule - Weekend Penalty == 'y', and DATE WORKED >= Rule - greater than date)
 timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] = np.where(
     (timesheet_cas_OT_daily_weekly['DOTW'] == 1) &
+    # 1/04/2025 Added check to make sure DEPTID is not equal to '84'
+    (timesheet_cas_OT_daily_weekly['DEPTID'] != '84') &
     (timesheet_cas_OT_daily_weekly['Rule - Weekend Penalty'] == 'y') &
     (timesheet_cas_OT_daily_weekly['DATE WORKED'] >= timesheet_cas_OT_daily_weekly['Rule - greater than date']),
     timesheet_cas_OT_daily_weekly['total_hours'] - timesheet_cas_OT_daily_weekly['cal_OT_hours'],
@@ -284,6 +286,8 @@ timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sat'] = np.where(
 # Step 7: Calculate weekend penalty for Sunday (DOTW == 2, Rule - Weekend Penalty == 'y', and DATE WORKED >= Rule - greater than date)
 timesheet_cas_OT_daily_weekly['cal_wknd_penalty_sun'] = np.where(
     (timesheet_cas_OT_daily_weekly['DOTW'] == 2) &
+    # 1/04/2025 Added check to make sure DEPTID is not equal to '84'
+    (timesheet_cas_OT_daily_weekly['DEPTID'] != '84') &
     (timesheet_cas_OT_daily_weekly['Rule - Weekend Penalty'] == 'y') &
     (timesheet_cas_OT_daily_weekly['DATE WORKED'] >= timesheet_cas_OT_daily_weekly['Rule - greater than date']),
     timesheet_cas_OT_daily_weekly['total_hours'] - timesheet_cas_OT_daily_weekly['cal_OT_hours'],
