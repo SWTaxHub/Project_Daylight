@@ -65,6 +65,50 @@ merged['discrepancy_amount_excl'] = merged['discrepancy_amount_excl'].round(6)
 print(merged.head())
 
 
+
+
+# merged = merged.reset_index()
+
+
+import numpy as np
+
+# Add the index as a column in summed_df
+merged['index'] = merged.index  
+
+print('man_invest_indexes.columns: ')
+print(man_invest_indexes.columns) 
+
+print(merged['index'].dtype)
+print(man_invest_indexes['index'].dtype)
+
+
+
+# Perform a merge on 'index', and bring in only the 'Work Area MI Outcome' column from man_invest_indexes
+merged_df = merged.merge(man_invest_indexes[['index', 'Work Area MI Outcome']], 
+                             on='index', 
+                             how='left',  # Left join to keep all rows from summed_df
+                             suffixes=('', '_man_invest'))
+
+
+print(merged_df.columns)
+# Apply the condition using np.where
+merged_df['discrepancy_amount_excl'] = np.where(
+    (merged_df['Work Area MI Outcome'] == 'OT NOT PAYABLE'),  # Condition on 'Work Area MI Outcome'
+    0,  # Set to 0 if condition is true
+    merged_df['discrepancy_amount_excl']  # Else, keep the original value
+)
+
+# Now, update summed_df with the modified 'discrepancy_amount_excl'
+merged['discrepancy_amount_excl'] = merged_df['discrepancy_amount_excl']
+
+
+
+
+
+
+
+
+
 merged.to_csv(os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_merged{current_date}.csv'), index=False)
 # List of columns to sum
 columns_to_sum = [
@@ -82,6 +126,55 @@ print(summed_df.head())
 
 # if the index is in man_invest_indexes and in summed_df and Work Area MI Outcome == 'OT NOT PAYABLE' then set 
 # the discrepancy_amount_excl to 0
+
+# import numpy as np
+
+# summed_df['discrepancy_amount_excl'] = np.where(
+#     (summed_df.index.isin(man_invest_indexes)) & 
+#     (man_invest_indexes['Work Area MI Outcome'] == 'OT NOT PAYABLE'),
+#     0,
+#     summed_df['discrepancy_amount_excl']
+# )
+
+# import numpy as np
+
+summed_df = summed_df.reset_index()
+
+print('summed_df.columns: ')
+print(summed_df.columns)
+
+import numpy as np
+
+# Add the index as a column in summed_df
+summed_df['index'] = summed_df.index  
+
+print('man_invest_indexes.columns: ')
+print(man_invest_indexes.columns) 
+
+print(summed_df['index'].dtype)
+print(man_invest_indexes['index'].dtype)
+
+
+
+# Perform a merge on 'index', and bring in only the 'Work Area MI Outcome' column from man_invest_indexes
+merged_df = summed_df.merge(man_invest_indexes[['index', 'Work Area MI Outcome']], 
+                             on='index', 
+                             how='left',  # Left join to keep all rows from summed_df
+                             suffixes=('', '_man_invest'))
+
+
+print(merged_df.columns)
+# Apply the condition using np.where
+merged_df['discrepancy_amount_excl'] = np.where(
+    (merged_df['Work Area MI Outcome'] == 'OT NOT PAYABLE'),  # Condition on 'Work Area MI Outcome'
+    0,  # Set to 0 if condition is true
+    merged_df['discrepancy_amount_excl']  # Else, keep the original value
+)
+
+# Now, update summed_df with the modified 'discrepancy_amount_excl'
+summed_df['discrepancy_amount_excl'] = merged_df['discrepancy_amount_excl']
+
+
 
 # if the index is in man_invest_indexes and in summed_df and Work Area MI Outcome == '1 hour' then set
 # the three_hour_top_up_cash to 0
