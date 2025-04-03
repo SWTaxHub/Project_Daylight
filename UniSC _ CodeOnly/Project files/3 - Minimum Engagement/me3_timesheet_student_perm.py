@@ -27,7 +27,7 @@ timesheet_df_filtered.to_csv('timesheet_df_filtered.csv')
 # added 30/01/24 due to run error where columns were different
 
 # Rename the column 'old_column_name' to 'new_column_name'
-summary_hr_df.rename(columns={'EMPID_EMPL_RCD': 'EMPLID'}, inplace=True)
+#summary_hr_df.rename(columns={'EMPID_EMPL_RCD': 'EMPLID'}, inplace=True)
 
 # Shorten the 'column_name' to 7 characters (left to right)
 summary_hr_df['EMPLID'] = summary_hr_df['EMPLID'].str[:7]
