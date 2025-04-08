@@ -275,6 +275,19 @@ merged_df = merged_df[~merged_df.duplicated(subset=['index'], keep='last')]
 
 
 
+cols_to_check = [
+    'discrepancy_amount_excl', 'cal_shift_top_up', 'three_hour_top_up_cash',
+    'one_hour_top_up_cash', 'two_hour_top_up_cash',
+    'wknd_discrepancy_amount_excl', 'OT_Cas_Loading_Discrp', 'Meal_Allowance'
+]
+
+merged_df[cols_to_check] = merged_df[cols_to_check].fillna(0)
+merged_df = merged_df[~(merged_df[cols_to_check] == 0).all(axis=1)]
+
+
+
+
+
 merged_df.to_csv(os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_merged{current_date}.csv'), index=False)
 
 print(merged_df.columns)
