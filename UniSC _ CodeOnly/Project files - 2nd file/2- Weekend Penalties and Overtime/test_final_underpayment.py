@@ -179,7 +179,8 @@ duplicate_combinations.to_csv('potental_rule_breakers.csv')
 # print(condensed_data)
 # condensed_data.to_csv('potential_rule_breakers.csv')
 
-
+print("Test to see what columns remain after calculations")
+print(list(matching_transactions.columns))
 
 # Step 6: Output the matching transactions to Excel as a sample
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')

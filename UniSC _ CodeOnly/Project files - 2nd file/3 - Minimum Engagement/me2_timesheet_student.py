@@ -53,6 +53,9 @@ student_df = joined_df[joined_df['is_student']].drop(columns=['Staff Number', 'T
 unique_indexes = student_df['index'].unique()
 timesheet_df['is_student'] = timesheet_df['index'].isin(unique_indexes)
 
+
+print("Test to see what columns remain after calculations")
+print(list(timesheet_df.columns))
 # Step 9: Save the updated timesheet with student indicator
 output_file_parquet = os.path.join(output_cleaned_data, 'timesheet_with_student_indicator.parquet')
 timesheet_df.to_parquet(output_file_parquet, index=False)

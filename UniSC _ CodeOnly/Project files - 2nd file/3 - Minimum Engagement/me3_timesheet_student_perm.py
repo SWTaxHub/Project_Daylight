@@ -78,6 +78,9 @@ if original_row_count == updated_row_count:
 else:
     print(f"Row count mismatch! Original: {original_row_count}, Updated: {updated_row_count}")
 
+
+print("Test to see what columns remain after calculations")
+print(list(timesheet_df.columns))
 # Step 9: Output the updated timesheet data with the `is_perm` indicator
 timesheet_df.to_parquet(output_directory + r'\timesheet_with_student_and_perm_indicator.parquet', index=False)
 

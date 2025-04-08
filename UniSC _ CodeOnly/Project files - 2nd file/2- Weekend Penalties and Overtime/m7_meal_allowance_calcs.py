@@ -206,6 +206,8 @@ timesheet_df['Meal_Allowance'] = np.where(
 
 # Display the result
 print(timesheet_df)
+print("Test to see what columns remain after calculations")
+print(list(timesheet_df.columns))
 
 #timesheet_df.to_csv('mealAllowance_payments.csv')
 

@@ -35,7 +35,7 @@ merged_df = man_invest_indexes.drop_duplicates(subset=['index'], keep='last')
 
 
 # Define the columns you want to keep
-columns_to_keep1 = ['index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID', 
+columns_to_keep1 = ['index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'Pay Date', 'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID', 
                     'Department Name', 'GL_Cost_Account', 'GP_RATE', 'Grade-Step OR Course Code', 'POSITION_NBR', 'Position Title',
                     'REPORTS_TO', 'manual_excl', 'is_student', 'is_perm',
                     'discrepancy_amount_excl', 'cal_shift_top_up', 
@@ -50,7 +50,7 @@ OT_ME_topups = OT_ME_topups[columns_to_keep1].fillna(0)
 
 
 
-columns_to_keep2 = ['index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID', 
+columns_to_keep2 = ['index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'Pay Date', 'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID', 
                     'Department Name', 'GL_Cost_Account', 'GP_RATE', 'Grade-Step OR Course Code', 'POSITION_NBR', 'Position Title',
                     'REPORTS_TO', 'manual_excl', 
                     'is_student', 'is_perm',
@@ -71,7 +71,7 @@ OT_ME_topups.to_csv(os.path.join(output_tests, f'underpayment_sample_transaction
 
 
 
-merged = pd.merge(OT_ME_topups, WkdPens_MAlw_CasLoad, on=['index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID', 
+merged = pd.merge(OT_ME_topups, WkdPens_MAlw_CasLoad, on=['index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'Pay Date', 'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID', 
                     'Department Name', 'GL_Cost_Account', 'GP_RATE', 'Grade-Step OR Course Code', 
                     #'POSITION_NBR', 'Position Title',
                     'REPORTS_TO', 'manual_excl'], how='outer')
@@ -160,7 +160,7 @@ merged_df = merged.merge(
 
 # Define the columns to keep
 columns_to_keep = [
-    'index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED',
+    'index', 'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'Pay Date',
     'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID',
     'Department Name', 'GL_Cost_Account', 'GP_RATE',
     'Grade-Step OR Course Code', 'POSITION_NBR_x', 'Position Title_x',
@@ -264,7 +264,7 @@ merged_df.rename(columns={
 
 # reorder columns
 merged_df = merged_df[[#'index_Combined', 'OT_ME_topups_Index', 'WkdPens_MAlw_CasLoad_Index',
-                'index',  'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 
+                'index',  'eFORM_ID', 'NAME', 'EMPLID', 'EMPL_RCD', 'DATE WORKED', 'Pay Date',
                  'PIN_NM', 'UNITS_CLAIMED', 'BEGINDTTM', 'ENDDTTM', 'DEPTID','Department Name', 'GL_Cost_Account', 'GP_RATE', 'Grade-Step OR Course Code',
                    'POSITION_NBR', 'Position Title', 'REPORTS_TO', 'manual_excl', 'is_student', 'is_perm', 'discrepancy_amount_excl', 'cal_shift_top_up', 
                    'three_hour_top_up_cash', 'one_hour_top_up_cash', 'two_hour_top_up_cash','wknd_discrepancy_amount_excl', 'OT_Cas_Loading_Discrp', 'Meal_Allowance']]
@@ -273,6 +273,12 @@ merged_df = merged_df[[#'index_Combined', 'OT_ME_topups_Index', 'WkdPens_MAlw_Ca
 merged_df = merged_df[~merged_df.duplicated(subset=['index'], keep='last')]
 
 
+
+
+merged_df.to_csv(os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_merged{current_date}.csv'), index=False)
+
+print(merged_df.columns)
+
 #Commented out on 19/12/24 Interest Calcs - USC have asked for the interest free outputs
 
 
@@ -280,25 +286,25 @@ merged_df = merged_df[~merged_df.duplicated(subset=['index'], keep='last')]
 
 
 
-interest_rates = pd.read_csv(r"c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\InterestRates.csv")
+#interest_rates = pd.read_csv(r"c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\InterestRates.csv")
 
-print(interest_rates.columns)
+#print(interest_rates.columns)
 
-interest_rates['Wages Paid Date'].rename('DATE WORKED', inplace=True)
-
-
-print("Missing 'DATE WORKED' in merged_df:", merged_df['DATE WORKED'].isna().sum())
-print("Missing 'DATE WORKED' in interest_rates:", interest_rates['DATE WORKED'].isna().sum())
+#interest_rates['Wages Paid Date'].rename('DATE WORKED', inplace=True)
 
 
-with_interest_rate = merged_df.merge(interest_rates, on='DATE WORKED', how='left')
+# print("Missing 'DATE WORKED' in merged_df:", merged_df['DATE WORKED'].isna().sum())
+# print("Missing 'DATE WORKED' in interest_rates:", interest_rates['DATE WORKED'].isna().sum())
 
-#Initialise recalc weekend Penalities with Interest Applied column 
 
-print(with_interest_rate.columns)
-print(with_interest_rate['compInterestFactor'].unique())
-print(with_interest_rate['compInterestFactor'].dtype)
-print(with_interest_rate['compInterestFactor'].head())
+# with_interest_rate = merged_df.merge(interest_rates, on='DATE WORKED', how='left')
+
+# #Initialise recalc weekend Penalities with Interest Applied column 
+
+# print(with_interest_rate.columns)
+# print(with_interest_rate['compInterestFactor'].unique())
+# print(with_interest_rate['compInterestFactor'].dtype)
+# print(with_interest_rate['compInterestFactor'].head())
 
 
 

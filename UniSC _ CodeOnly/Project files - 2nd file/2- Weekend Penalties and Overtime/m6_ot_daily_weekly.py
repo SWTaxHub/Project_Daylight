@@ -492,7 +492,8 @@ timesheet_cas_OT_daily_weekly.loc[timesheet_cas_OT_daily_weekly['date_only'] > c
     (timesheet_cas_OT_daily_weekly['ts_ot_post_three'] * 2.00)
 ) * timesheet_cas_OT_daily_weekly['base_rate'] * loading_factor
 
-
+print("Test to see what columns remain after calculations")
+print(list(timesheet_cas_OT_daily_weekly.columns))
 
 
 print("Shift top-up calculations complete.")
