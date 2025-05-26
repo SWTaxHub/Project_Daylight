@@ -4,18 +4,18 @@ import runpy
 from pathlib import Path
 
 
-# List of Python files to run in sequence
-python_files = [
-    # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m4_weekend_and_overtime_penalties_working_file.py",
-    # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m4.1_Casual_Academics.py",
-    # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m5_ot_span_weekend.py",
-    r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m4_weekend_and_overtime_penalties_working_file.py",
-    r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m4.1_Casual_Academics.py",
-    r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m5_ot_span_weekend.py",
-    r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m6_ot_daily_weekly.py",    
-    r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m7_meal_allowance_calcs.py",
-    r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\test_final_underpayment.py"
-]
+# # List of Python files to run in sequence
+# python_files = [
+#     # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m4_weekend_and_overtime_penalties_working_file.py",
+#     # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m4.1_Casual_Academics.py",
+#     # r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\UniSC _ PaulsCode\Project files\2- Weekend Penalties and Overtime\m5_ot_span_weekend.py",
+#     r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m4_weekend_and_overtime_penalties_working_file.py",
+#     r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m4.1_Casual_Academics.py",
+#     r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m5_ot_span_weekend.py",
+#     r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m6_ot_daily_weekly.py",    
+#     r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\m7_meal_allowance_calcs.py",
+#     r"C:\Git\Project_Daylight\UniSC _ CodeOnly\Project files - 2nd file\2- Weekend Penalties and Overtime\test_final_underpayment.py"
+# ]
 
 
 

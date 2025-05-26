@@ -18,6 +18,77 @@ output_cleaned_data =r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty L
 
 #output_tests = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Tests\\'
 output_tests = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Tests\\'
+
+
+# Complete list of EMPLIDs to check against
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
+
+
+
 # Step 1: Load Enrolment Data, keep only necessary columns, and remove duplicates
 enrolment_df = pd.read_excel(enrolment_data_path, sheet_name=enrolment_sheet)
 enrolment_df = enrolment_df[['Staff Number', 'TERM_BEGIN_DT', 'TERM_END_DT']].drop_duplicates()
@@ -52,6 +123,10 @@ student_df = joined_df[joined_df['is_student']].drop(columns=['Staff Number', 'T
 # Step 8: Get the unique list of 'index' and join it back to the original timesheet data
 unique_indexes = student_df['index'].unique()
 timesheet_df['is_student'] = timesheet_df['index'].isin(unique_indexes)
+
+
+
+check_emplids(timesheet_df, emplids_list, "Timesheet Data with Student Indicator")
 
 
 print("Test to see what columns remain after calculations")

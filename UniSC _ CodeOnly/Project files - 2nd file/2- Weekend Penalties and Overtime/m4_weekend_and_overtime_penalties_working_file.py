@@ -18,6 +18,10 @@ test_on = 1  # Set to 1 to enable the test, 0 to skip it
 
 #Sam's file paths
 timesheet_sal_admin_file_path = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_include_SAL_ADMIN_PLAN.parquet'
+
+
+
+
 exclusion_list_path = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\UniSC Data Transfer 2 Sept\Exclusion list.xlsx'
 public_holiday_file_path = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\UniSC Data Transfer 2 Sept\Public Holidays.xlsx'
 output_cleaned_data = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\\'
@@ -63,14 +67,107 @@ timesheet_sal_admin_file['Position Title'] = timesheet_sal_admin_file['Position 
 ]
  """
 
+# emplids_list = [
 
+#     '1084015',
+#     '1117765',
+#     '1140286',
+#     '1155234',
+#     '1167211',
+#     '9012171',
+#     '9012190',
+#     '9012204',
+#     '9012210',
+#     '9012212',
+#     '9012216',
+#     '9012217',
+#     '9012261',
+#     '9012269',
+#     '9012279',
+#     '9012304',
+#     '9012314'
+# ]
+
+
+# Complete EMPLID list
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
+
+check_emplids(timesheet_sal_admin_file, emplids_list, label="Pre Filter timesheet_sal_admin_file")
 
 
 timesheet_sal_admin_file = timesheet_sal_admin_file[
     (timesheet_sal_admin_file['job_code'] == 'CASUAL') |
-    (timesheet_sal_admin_file['job_code'] == 'SESS')
+    (timesheet_sal_admin_file['job_code'] == 'SESS') 
     
     ]
+
+check_emplids(timesheet_sal_admin_file, emplids_list, label="Post Filter timesheet_sal_admin_file")
+
 #The above filtering is causing only Casual Professional employees to be pulled in. I need to bring casual academic as well 
 
 
@@ -111,6 +208,11 @@ timesheet_cas_filtered_rules = pd.merge(
 
 '''
 
+
+
+
+
+
 # Step 6: Perform a left join on the fields DeptID, Department Name, and Position Title
 timesheet_cas_filtered_rules = pd.merge(
     timesheet_sal_admin_file,
@@ -121,6 +223,13 @@ timesheet_cas_filtered_rules = pd.merge(
 
 
 
+check_emplids(timesheet_sal_admin_file, emplids_list, label="Pre Merge timesheet_sal_admin_file with rules_df")
+
+
+
+print(timesheet_cas_filtered_rules.columns)
+# Example usage
+check_emplids(timesheet_cas_filtered_rules, emplids_list, label="Post Merge timesheet_sal_admin_file with rules_df")
 
 
 
@@ -291,6 +400,8 @@ else:
 
 #Commented out to ADDIT because it was in both lists and suspect it belongs to Casual acedamic 
 #pin_nm_list = ['CASUAL', 'OT', 'CALLBACK', 'SHIFT100', 'SHIFT50', 'SHIFT150', 'SATCASUAL', 'SUNCASUAL', 'ADDIT', 'SHIFT15', 'CASUAL-ORD']
+
+
 
 pin_nm_list = ['CASUAL', 'OT', 'CALLBACK', 'SHIFT100', 'SHIFT50', 'SHIFT150', 'SATCASUAL', 'SUNCASUAL', 'SHIFT15', 'CASUAL-ORD']
 
@@ -498,9 +609,20 @@ timesheet_cas_filtered_rules['Holiday'] = timesheet_cas_filtered_rules['Holiday'
 rows_after_join = len(timesheet_cas_filtered_rules)
 print(f"Row count after join: {rows_after_join}")
 
+
+check_emplids(timesheet_cas_filtered_rules, emplids_list, label="Output timesheet_cas_filtered_rules")
+
 # Step 11: Output the final table to Parquet and Excel
 timesheet_cas_filtered_rules.to_parquet(output_cleaned_data + 'timesheet_cas_filtered_rules.parquet', index=False)
-timesheet_cas_filtered_rules.head(2000).to_excel(output_cleaned_data + 'timesheet_cas_filtered_rules_sample.xlsx', index=False)
+
+timesheet_cas_filtered_rules_csv = timesheet_cas_filtered_rules.copy()
+
+# only show data from June 30th 2024 onwards
+timesheet_cas_filtered_rules_csv = timesheet_cas_filtered_rules_csv[timesheet_cas_filtered_rules_csv['DATE WORKED'] >= '2024-06-30']
+
+
+#timesheet_cas_filtered_rules.head(2000).to_excel(output_cleaned_data + 'timesheet_cas_filtered_rules_sample.xlsx', index=False)
+timesheet_cas_filtered_rules_csv.to_excel(output_cleaned_data + 'timesheet_cas_filtered_rules_sample.xlsx', index=False)
 print("Final table saved to Parquet and Excel.")
 
 # Step 6: Filter for rows where 'manual_excl' is TRUE

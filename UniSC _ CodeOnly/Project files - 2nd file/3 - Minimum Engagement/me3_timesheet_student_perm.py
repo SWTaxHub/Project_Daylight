@@ -15,6 +15,73 @@ summary_hr_df = pd.read_parquet(summary_hr_data_permanent_path)
 # Step 1: Store the original number of rows before any modifications (for testing later)
 original_row_count = len(timesheet_df)
 
+# Complete list of EMPLIDs to check against
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
+
 # Step 2: Filter for relevant columns (index, EMPLID, DATE WORKED)
 timesheet_df_filtered = timesheet_df[['index', 'EMPLID', 'DATE WORKED']].copy()
 
@@ -22,6 +89,9 @@ print('timesheet df filtered columns: ')
 print(timesheet_df_filtered.columns)
 
 timesheet_df_filtered.to_csv('timesheet_df_filtered.csv')
+
+
+check_emplids(timesheet_df_filtered, emplids_list, "Filtered Timesheet Data")
 
 
 # added 30/01/24 due to run error where columns were different
@@ -56,6 +126,9 @@ summary_hr_df['latest_date'] = pd.to_datetime(summary_hr_df['latest_date'])
 # Step 4: Perform a left join between the filtered timesheet and the HR data based on EMPLID
 merged_df = pd.merge(timesheet_df_filtered, summary_hr_df[['EMPLID', 'earliest_date', 'latest_date']], how='left', on='EMPLID')
 
+
+check_emplids(merged_df, emplids_list, "Merged Data Step 4")
+
 # Step 5: Filter the merged dataset to keep only rows where `DATE WORKED` is between `earliest_date` and `latest_date`
 filtered_df = merged_df.loc[
     (merged_df['DATE WORKED'] >= merged_df['earliest_date']) &
@@ -82,6 +155,13 @@ else:
 print("Test to see what columns remain after calculations")
 print(list(timesheet_df.columns))
 # Step 9: Output the updated timesheet data with the `is_perm` indicator
+
+
+
+
+
+check_emplids(timesheet_df, emplids_list, "Timesheet with is_perm indicator")
+
 timesheet_df.to_parquet(output_directory + r'\timesheet_with_student_and_perm_indicator.parquet', index=False)
 
 # Step 10: Output the test sample with the `is_perm` indicator to Excel

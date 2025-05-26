@@ -32,6 +32,76 @@ Penalties_Recalc = pd.read_parquet(Penalties_Recalc)
 # Step 3: Find all unique EMPID_week_id where any of the specified overtime conditions are met in timesheet_cas_OT_daily_weekly
 
 
+# Complete list of EMPLIDs to check against
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
+check_emplids(Penalties_Recalc, emplids_list, "Penalties_Recalc")
+
+
+
 condition_ot = (
     (Penalties_Recalc['discrepancy_amount_excl'] == 0 |
      Penalties_Recalc['discrepancy_amount_excl'].isna()) 
@@ -213,6 +283,9 @@ print(list(timesheet_df.columns))
 
 #Commented out 26th Dec to test adding meal allowance to output
 #timesheet_df.to_parquet(output_cleaned_data + 'timesheet_min_top_up_cals_MealAllowance.parquet', index=False)
+
+check_emplids(timesheet_df, emplids_list, "Final EMPLIDs in timesheet_df")
+
 
 timesheet_df.to_parquet(output_cleaned_data + 'timesheet_cas_OT_daily_weekly.parquet', index=False)
 

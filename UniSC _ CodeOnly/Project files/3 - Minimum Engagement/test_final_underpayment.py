@@ -3,6 +3,74 @@ import os
 import numpy as np
 import datetime
 
+
+
+# Complete list of EMPLIDs to check against
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
 # Step 1: Define paths for files and output directories
 #timesheet_min_top_up_cals_path = r'C:\Users\zhump\Documents\Data Analytics\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals.parquet'
 #timesheet_min_top_up_cals_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_min_top_up_cals.parquet"
@@ -15,6 +83,9 @@ output_tests = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Des
 # Step 2: Load the Parquet files
 #timesheet_min_top_up_cals = pd.read_parquet(timesheet_min_top_up_cals_path)
 Penalties_Recalc = pd.read_parquet(Penalties_Recalc)
+
+
+Penalties_Recalc.to_csv('Penalties_Recalc_file1.csv', index=False)
 
 print(Penalties_Recalc.columns)
 
@@ -43,8 +114,9 @@ dates_with_top_up_cash = Penalties_Recalc.loc[condition_top_up, 'EMPLID_week_id'
 
 # Step 5: Filter transactions in timesheet_cas_OT_daily_weekly where EMPID_week_id matches those with overtime or where date_only matches those with top-up cash
 matching_transactions = Penalties_Recalc[
-    (Penalties_Recalc['EMPLID_week_id'].isin(empid_week_id_with_overtime)) |
-    (Penalties_Recalc['EMPLID_week_id'].isin(dates_with_top_up_cash))
+   (Penalties_Recalc['EMPLID_week_id'].isin(empid_week_id_with_overtime)) 
+   |
+   (Penalties_Recalc['EMPLID_week_id'].isin(dates_with_top_up_cash))
 ]
 
 # step 5b: Restrict extract to only hours worked after 01/01/2017
@@ -80,13 +152,16 @@ columns_to_nullify = [
      "avg_cal_loading", "average_ts_loading",
      "loading_difference_excl",
     "discrepancy_amount_excl", # "factor_difference_may17", "discrepancy_amount_may17",
-    "cal_shift_top_up", "Cal_OT_Hours_Aggregated", "G_Break_Minutes_Aggregated",
+    "cal_shift_top_up",
+    # # "Cal_OT_Hours_Aggregated", "G_Break_Minutes_Aggregated",
     "ENDDTTM_timeOnly", "Meal_Allowance_Code", "Meal_Allowance", "is_student",
     "is_perm", "minimum_hours", "gap_hours", "conseq_cumul_sumhrs", "EMPLID_date_only",
     "ex_1_3hrs_day", "gap_hours_sub", "is_first_shift", "cond_new_emplid",
     "cond_new_date", "cond_midnight_straddle", "cond_midnight_carryover",
-    "first_prior_gap_found", "elapsed_hrs", "three_hour_top_up", "one_hour_top_up",
-    "two_hour_top_up", "condition_1_position_nbr", "condition_2_elapsed_hrs",
+    "first_prior_gap_found", "elapsed_hrs", 
+    #"three_hour_top_up", "one_hour_top_up",
+    #"two_hour_top_up",
+    "condition_1_position_nbr", "condition_2_elapsed_hrs",
     "condition_3_ex_1_3hrs_day", "condition_4_date_worked", "condition_5_gap_and_elapsed",
     "one_hour_min_elapsed_hrs", "adjusted_base_rate", "three_hour_top_up_cash",
     "one_hour_top_up_cash", "two_hour_top_up_cash" # "sum_WeekendPens",
@@ -100,16 +175,6 @@ columns_to_nullify = [
 
 # Apply condition to set selected columns to NaN
 matching_transactions.loc[matching_transactions['DATE WORKED'] > cutoff_date, columns_to_nullify] = np.nan
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -138,13 +203,16 @@ duplicate_combinations.to_csv('potental_rule_breakers.csv')
 # # Display the condensed DataFrame
 # print(condensed_data)
 # condensed_data.to_csv('potential_rule_breakers.csv')
-
-
+check_emplids(matching_transactions, emplids_list, "Filtered Matching Transactions")
 
 # Step 6: Output the matching transactions to Excel as a sample
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-output_file = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME{current_date}.xlsx')
-matching_transactions.head(100000).to_excel(output_file, index=False)
+output_file1 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME{current_date}.xlsx')
+matching_transactions.to_excel(output_file1, index=False)
+output_file = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME{current_date}.parquet')
+matching_transactions.to_parquet(output_file, index=False)
+
+
 
 print(f"Sample of matching transactions with overtime and top-up cash saved to {output_file}")
 # Print the number of rows in the matching_transactions DataFrame

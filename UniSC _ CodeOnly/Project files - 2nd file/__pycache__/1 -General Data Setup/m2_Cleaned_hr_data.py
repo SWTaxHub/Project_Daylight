@@ -8,6 +8,8 @@ output_directory = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd
 # Load the cleaned HR data from Parquet (updated from CSV to Parquet)
 hr_cleaned_df = pd.read_parquet(output_directory + r'\cleaned_hr_master_data.parquet')
 
+hr_cleaned_df.to_csv(output_directory + r'\cleaned_hr_master_data.csv', index=False)
+
 # Step 1: Create a new 'term_date' field where ACTION == 'TER'
 hr_cleaned_df['term_date'] = hr_cleaned_df.apply(
     lambda row: row['EFFECTIVE DATE'] if row['ACTION'] == 'TER' else pd.NaT, axis=1

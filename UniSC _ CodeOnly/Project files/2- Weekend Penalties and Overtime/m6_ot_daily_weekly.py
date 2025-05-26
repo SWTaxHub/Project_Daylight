@@ -2,6 +2,74 @@ import pandas as pd
 import os  # Import os to handle directory operations
 import numpy as np
 
+
+
+# Complete list of EMPLIDs to check against
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
 # Define a test control variable
 test_on = 1  # Set to 1 to enable the test, 0 to skip it
 
@@ -27,6 +95,9 @@ timesheet_cas_OT_daily_weekly = pd.read_parquet(timesheet_cas_OT_weekend_span_pa
 
 # Step to identify rows with duplicate worked times based on given conditions
 # Step 3: Sort by EMPLID and datetime_startwork (ascending)
+
+
+
 timesheet_cas_OT_daily_weekly.sort_values(by=['EMPLID', 'datetime_startwork', 'job_code'], inplace=True)
 
 # Step A: Add an identifier combining EMPID, EMPL_RCD, BEGINDTTM, and ENDDTTM for easy grouping
@@ -549,6 +620,9 @@ timesheet_cas_OT_daily_weekly['cal_shift_top_up'] = np.select(
 )
 
 print("Shift top-up calculations complete.")
+
+
+check_emplids(timesheet_cas_OT_daily_weekly, emplids_list, "Final DataFrame EMPLIDs")
 
 # Step 10: Save the final data to Parquet
 output_parquet_file = os.path.join(output_cleaned_data, 'timesheet_cas_OT_daily_weekly.parquet')

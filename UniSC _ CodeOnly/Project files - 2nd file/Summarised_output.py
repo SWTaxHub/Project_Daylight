@@ -10,19 +10,112 @@ cleaned_data = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Des
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
 
+# emplids_list =[
+
+#     '1095707',
+#     '1117765',
+#     '1126467',
+#     '1132911',
+#     '1140286',
+#     '1150686',
+#     '1166428',
+#     '9009649',
+#     '9010295',
+#     '9011523',
+#     '9011920'
+
+# ]
+
+
+emplids_list = [
+
+'1065200',
+'1082447',
+'1084015',
+'1086737',
+'1095707',
+'1110567',
+'1111375',
+'1111577',
+'1115571',
+'1117164',
+'1117765',
+'1121038',
+'1124461',
+'1126467',
+'1132911',
+'1134550',
+'1138183',
+'1140286',
+'1150609',
+'1150686',
+'1155234',
+'1157420',
+'1159456',
+'1161781',
+'1164228',
+'1166428',
+'1167211',
+'9001610',
+'9006461',
+'9006535',
+'9009265',
+'9009308',
+'9009649',
+'9010295',
+'9011523',
+'9011752',
+'9011920',
+'9012171',
+'9012190',
+'9012204',
+'9012210',
+'9012212',
+'9012216',
+'9012217',
+'9012261',
+'9012269',
+'9012279',
+'9012304',
+'9012314'
+]
+
+
+# EMPID_EMPL_RCD
+def check_emplids(df, emplid_list, label=""):
+    present = df[df['EMPLID'].isin(emplid_list)]['EMPLID'].unique()
+    missing = set(emplid_list) - set(present)
+    
+    print(f"\n--- {label} ---")
+    print("Found EMPLIDs:", list(present))
+    if missing:
+        print("Missing EMPLIDs:", list(missing))
+    else:
+        print("All EMPLIDs found.")
+
+
+
+
 #file1 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME{current_date}.xlsx')
-file1 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME2025-03-05.xlsx')
+file1 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_OT_ME2025-05-20.parquet')
 
 #file2 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_WkdPens_MAlw_CasLoad{current_date}.xlsx')
-file2 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_WkdPens_MAlw_CasLoad2025-03-05.xlsx')
+file2 = os.path.join(output_tests, f'underpayment_sample_transactions_with_topups_WkdPens_MAlw_CasLoad2025-05-20.parquet')
+
+
 
 
 man_invest = os.path.join(cleaned_data, f'Manual_Investigation_INDEX_CODES.xlsx')
 
 
 
-OT_ME_topups = pd.read_excel(file1)
-WkdPens_MAlw_CasLoad = pd.read_excel(file2)
+OT_ME_topups = pd.read_parquet(file1)
+WkdPens_MAlw_CasLoad = pd.read_parquet(file2)
+
+
+
+
+
 
 man_invest_indexes = pd.read_excel(man_invest)
 
@@ -57,6 +150,9 @@ merged = pd.merge(OT_ME_topups, WkdPens_MAlw_CasLoad, on=['eFORM_ID', 'NAME', 'E
 
 merged['discrepancy_amount_excl'] = merged['discrepancy_amount_excl'].round(6)
 
+
+
+check_emplids(merged, emplids_list, "Merged DataFrame")
 
 # Drop duplicate rows
 #merged.drop_duplicates(inplace=True)
@@ -180,6 +276,8 @@ summed_df['discrepancy_amount_excl'] = merged_df['discrepancy_amount_excl']
 # the three_hour_top_up_cash to 0
 
 
+
+check_emplids(summed_df, emplids_list, "summed_df")
 
 # Save the merged DataFrame to a new Excel file
 output_file = os.path.join(output_tests, f'underpayment_sample_transactions_SummaryByEMPLID{current_date}.xlsx')
