@@ -346,7 +346,18 @@ merged_df['OT_Cas_Loading_Discrp'] = np.where(
 
 #merged_df['wknd_discrepancy_amount_excl']
 
+# Adding No Top Up Cash Step from USC Manual Investigation - 28/02/25
+#As per USC's request, if the Work Area MI Outcome is 'No Top Up', set the top up cash columns to 0
+merged_df['three_hour_top_up_cash'] = np.where(
+    (merged_df['Work Area MI Outcome'] == 'No Top Up'),
+    0,
+    merged_df['three_hour_top_up_cash'])
 
+
+merged_df['one_hour_top_up_cash'] = np.where(
+    (merged_df['Work Area MI Outcome'] == 'No Top Up'),
+    0,
+    merged_df['one_hour_top_up_cash'])
 
 
 

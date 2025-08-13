@@ -76,7 +76,8 @@ if __name__ == "__main__":
 
     # Generate the summary table excluding casual employees (FULL_PART_TIME contains 'D')
     summary_table_permanent = hr_summary_table[~hr_summary_table['full_part_time'].str.contains('D')]
-
+    
+    print(summary_table_permanent.columns)
     # Save the permanent employees summary table to Parquet
     permanent_summary_file = output_directory + r'\summary_hr_data_permanent.parquet'
     summary_table_permanent.to_parquet(permanent_summary_file, index=False)

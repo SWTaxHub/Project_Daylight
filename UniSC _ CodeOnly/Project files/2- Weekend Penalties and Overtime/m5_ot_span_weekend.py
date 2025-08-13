@@ -15,7 +15,9 @@ test_on = 1  # Set to 1 to enable the test, 0 to skip it
 #Test 1: change file path to not look at condensed data set only including casual professionals
 #timesheet_cas_filtered_rules_path = r'c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_cas_filtered_rules.parquet'
 #Keep the name the same for testing purposes change to more accurate one later
-timesheet_cas_filtered_rules_path = r'c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_cas_filtered_rules.parquet'
+#timesheet_cas_filtered_rules_path = r'c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\timesheet_cas_filtered_rules.parquet'
+timesheet_cas_filtered_rules_path = r"C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Client Projects\Project Daylight\Outputs\Cleaned Data\timesheet_cas_filtered_rules.parquet"
+
 
 output_cleaned_data = r'c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Cleaned Data\\'
 output_tests = r'C:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\Desktop\Project Daylight\Outputs\Tests\\'
@@ -27,6 +29,8 @@ rules_file_path = r'c:\Users\smits\OneDrive - SW Accountants & Advisors Pty Ltd\
 # Step 2: Load the Parquet file
 timesheet_cas_OT_weekend_span = pd.read_parquet(timesheet_cas_filtered_rules_path)
 print('step 1 done')
+
+print(timesheet_cas_OT_weekend_span.columns)
 # Define the comparison date as a datetime object (no need to convert since DATE WORKED is datetime)
 comparison_date = pd.to_datetime('22/11/2023', format='%d/%m/%Y')
 
